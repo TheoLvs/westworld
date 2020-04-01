@@ -10,6 +10,10 @@ The goal is to be able to simulate environments in logistics, retails, epidemiol
 
 *The name is of course inspired by the TV series Westworld, which is actually a gigantic multi-agent simulation system.*
 
+# Documentation
+Documentation is available locally in docs folder or online at https://theolvs.github.io/westworld
+
+
 # Repo structure
 
 ```

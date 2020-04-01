@@ -1,3 +1,19 @@
 site_name: Westworld documentation
+site_description: 'Multi-agent simulation library'
+site_author: 'Théo Alves Da Costa'
 theme:
   name: 'material'
+  palette:
+    primary: 'brown'
+markdown_extensions:
+  - admonition
+repo_name: 'theolvs/westworld'
+repo_url: 'https://github.com/TheoLvs/westworld'
+extra:
+  social:
+    - type: 'github'
+      link: 'https://github.com/TheoLvs'
+    - type: 'twitter'
+      link: 'https://twitter.com/theolvsdc'
+    - type: 'linkedin'
+      link: 'https://www.linkedin.com/in/th%C3%A9o-alves-da-costa-09397a82/'

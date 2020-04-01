@@ -1,0 +1,2 @@
+mkdocs gh-deploy
+pause

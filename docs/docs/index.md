@@ -1,17 +1,12 @@
-# Welcome to MkDocs
+# Welcome to Westworld documentation
+![](img/header.jpg)
 
-For full documentation visit [mkdocs.org](https://mkdocs.org).
+**Westworld** is a multi-agent simulation library, its goal to simulate and optimize systems and environments with multiple agents interacting. Its inspiration is drawn from Unity software and [Unity ML Agents](https://github.com/Unity-Technologies/ml-agents), adapted in Python. 
 
-## Commands
+The goal is to be able to simulate environments in logistics, retails, epidemiology, providing pre-coded spatial environments and communication between agents. Optimization can be included using heuristics as well as Reinforcement Learning.
 
-* `mkdocs new [dir-name]` - Create a new project.
-* `mkdocs serve` - Start the live-reloading docs server.
-* `mkdocs build` - Build the documentation site.
-* `mkdocs help` - Print this help message.
 
-## Project layout
+!!! note
+    The name is of course inspired by the TV series Westworld, which is actually a gigantic multi-agent simulation system.
 
-    mkdocs.yml    # The configuration file.
-    docs/
-        index.md  # The documentation homepage.
-        ...       # Other markdown pages, images and other files.
+
