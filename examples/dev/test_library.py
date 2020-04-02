@@ -1,14 +1,14 @@
 
 
 import sys
-sys.path.append("C:/git/reinforcement-learning")
+sys.path.append("C:/git/westworld")
 
 import time
 import pygame
 import numpy as np
 
-from hyperion.environment.grid import GridEnvironment
-from hyperion.agents.grid import GridAgent,Rectangle
+from westworld.environment.grid import GridEnvironment
+from westworld.agents.grid import GridAgent,Rectangle
 
 BOX_SIZE = 5
 
