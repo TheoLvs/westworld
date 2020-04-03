@@ -6,8 +6,8 @@ from .rectangle import Rectangle
 
 
 class GridAgent(Rectangle):
-    def __init__(self,x,y,width = 1,height = 1,box_size = None,color = (255,0,0)):
-        super().__init__(x,y,width,height,box_size,color)
+    def __init__(self,x,y,width = 1,height = 1,box_size = None,color = (255,0,0),circle = False):
+        super().__init__(x,y,width,height,box_size,color,circle)
 
         self.change_direction()
 
@@ -15,6 +15,7 @@ class GridAgent(Rectangle):
     @property
     def static(self):
         return False
+
 
     def __repr__(self):
         return f"Agent(x={self.x},y={self.y})"

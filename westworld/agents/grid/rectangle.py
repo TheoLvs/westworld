@@ -9,7 +9,7 @@ from ..base_object import BaseObject
 
 class Rectangle(BaseObject):
 
-    def __init__(self,x,y,width,height,box_size,color):
+    def __init__(self,x,y,width,height,box_size,color,circle = False):
         
         super().__init__()
 
@@ -19,6 +19,7 @@ class Rectangle(BaseObject):
         self.height = height
         self.box_size = box_size
         self.color = color
+        self.circle = circle
 
 
     def __repr__(self):
@@ -36,12 +37,31 @@ class Rectangle(BaseObject):
 
 
     @property
+    def blocking(self):
+        return True
+
+    @property
     def dimensions(self):
         return (
             self.x * self.box_size,
             self.y * self.box_size,
             self.width * self.box_size,
             self.height * self.box_size
+        )
+
+
+    @property
+    def radius(self):
+        assert self.width == self.height
+        return int((self.width * self.box_size)/2)
+
+
+    @property
+    def center(self):
+        radius = self.radius
+        return (
+            self.x * self.box_size + radius,
+            self.y * self.box_size + radius,
         )
 
     @property
@@ -85,7 +105,7 @@ class Rectangle(BaseObject):
 
         # Compute collisions using PyGame
         else:
-            other_colliders = [other.collider for other in others if other.id != self.id]
+            other_colliders = [other.collider for other in others if (other.id != self.id and other.blocking)]
             collisions = collider.collidelistall(other_colliders)
 
         # Return signal of collision and colliders touched
@@ -105,10 +125,12 @@ class Rectangle(BaseObject):
 
     def render(self,env):
 
-        # Draw a rectangle on the grid using pygame
-        pygame.draw.rect(env.screen,self.color,self.dimensions)
+        if not self.circle:
+            # Draw a rectangle on the grid using pygame
+            pygame.draw.rect(env.screen,self.color,self.dimensions)
 
-        # TODO add circle representation (+ pictures)
-        # pygame.draw.circle(self.screen,color,(self.fig.x,self.fig.y),10)
-        # pass
+        else:
+
+            # Draw a circle on the grid using pygame
+            pygame.draw.circle(env.screen,self.color,self.center,self.radius)
 
