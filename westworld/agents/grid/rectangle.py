@@ -27,8 +27,18 @@ class Rectangle(BaseObject):
 
 
     @property
+    def value(self):
+        return 1
+
+
+    @property
     def pos(self):
         return self.x,self.y
+
+
+    @property
+    def pos_array(self):
+        return self.y,self.x
 
 
     @property

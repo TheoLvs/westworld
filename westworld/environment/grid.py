@@ -24,9 +24,18 @@ class GridEnvironment(SpatialEnvironment):
         self.grid = np.zeros((width,height))
 
 
+
+    def quit(self):
+        pygame.quit()
+
+
+
     @property
     def objects(self):
         return self.agents + self.static
+
+
+
 
 
     def add_object(self,obj):
@@ -116,6 +125,31 @@ class GridEnvironment(SpatialEnvironment):
                         self.add_object(obj)
 
 
+
+
+
+    #=================================================================================
+    # MESHES AND ARRAYS
+    #=================================================================================
+
+
+    def get_grid(self):
+        return np.zeros((self.width,self.height)).T
+
+
+    def get_navigation_mesh(self,obj = None):
+
+        # Prepare empty mesh        
+        mesh = self.get_grid()
+
+        # Get all blocking objects
+        object_id = "" if obj is None else obj.id
+        positions = [x.pos_array for x in self.objects if (x.id != object_id and x.blocking)]
+
+        # Update mesh with blocking positions
+        mesh[tuple(np.array(positions).T)] = 1
+
+        return mesh
 
 
 
