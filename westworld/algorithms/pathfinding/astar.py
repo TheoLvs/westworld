@@ -1,9 +1,15 @@
 """A* pathfinding algorithm implementation
-Inspired from the work of : 
-- https://medium.com/@nicholas.w.swift/easy-a-star-pathfinding-7e6689c7f7b2
+Closely adapted from the work of : 
+- Nicholas Swift https://medium.com/@nicholas.w.swift/easy-a-star-pathfinding-7e6689c7f7b2
+- Ryan Collinwood https://gist.github.com/ryancollingwood/32446307e976a11a1185a5394d6657bc (improvement on the latter example)
 """
 
-from .pathfinding import Pathfinding
+import numpy as np
+import heapq
+import warnings
+
+from .pathfinding import Pathfinding,PathfindingError
+
 
 
 class Node:
@@ -22,8 +28,15 @@ class Node:
 
 
     def __repr__(self):
-        return f"{self.position}"
+        return f"{self.position} - g: {self.g} h: {self.h} f: {self.f}"
 
+    # defining less than for purposes of heap queue
+    def __lt__(self, other):
+        return self.f < other.f
+    
+    # defining greater than for purposes of heap queue
+    def __gt__(self, other):
+        return self.f > other.f
 
 
 
@@ -33,8 +46,18 @@ class AStar(Pathfinding):
         pass
 
 
-    def run(self,array,start,end,diagonal = False,n = None):
-        """Returns a list of tuples as a path from the given start to the given end in the given array
+    @staticmethod
+    def return_path(current_node):
+        path = []
+        current = current_node
+        while current is not None:
+            path.append(current.position)
+            current = current.parent
+        return path[::-1]  # Return reversed path
+
+
+    def run(self,mesh,start,end,diagonal = False,n = None):
+        """Returns a list of tuples as a path from the given start to the given end in the given mesh
         Base implementation is drawn from Nicholas Swift work explained at https://medium.com/@nicholas.w.swift/easy-a-star-pathfinding-7e6689c7f7b2
 
         TODO - This can probably be a lot accelerated by numba and or cython
@@ -42,6 +65,12 @@ class AStar(Pathfinding):
         TODO - Will only work if grid environment, yet possible to discretize env if needed
         TODO - Add stop at n iterations to fasten computation
         """
+
+        # Safety check
+        try:
+            mesh[start],mesh[end]
+        except IndexError as e:
+            raise PathfindingError(f"Start or end not in the mesh: {e}")
 
         # Create start and end node
         start_node = Node(None, start)
@@ -54,52 +83,49 @@ class AStar(Pathfinding):
         open_list = []
         closed_list = []
 
-        # Add the start node
-        open_list.append(start_node)
+        # Heapify the open_list and Add the start node
+        heapq.heapify(open_list) 
+        heapq.heappush(open_list, start_node)
 
-        i = 0
+        # Adding a stop condition
+        outer_iterations = 0
+        max_iterations = np.product(mesh.shape)
+        if n is not None:
+            max_iterations = min([max_iterations,n])
 
         # Loop until you find the end
         while len(open_list) > 0:
 
-            print(len(open_list))
-            i += 1
+            outer_iterations += 1
 
             # Get the current node
-            current_node = open_list[0]
-            current_index = 0
-            for index, item in enumerate(open_list):
-                if item.f < current_node.f:
-                    current_node = item
-                    current_index = index
-
-            # Pop current off open list, add to closed list
-            open_list.pop(current_index)
+            current_node = heapq.heappop(open_list)
             closed_list.append(current_node)
+
+            if outer_iterations > max_iterations:
+                # if we hit this point return the path such as it is
+                # it will not contain the destination
+                warnings.warn("Giving up on pathfinding too many iterations")
+                return self.return_path(current_node)     
 
             # Found the goal
             if current_node == end_node:
-                path = []
-                current = current_node
-                while current is not None:
-                    path.append(current.position)
-                    current = current.parent
-                print(i)
-                return path[::-1] # Return reversed path
+                return self.return_path(current_node)
 
             # Generate children
             children = []
+            
             for new_position in moves: # Adjacent squares
 
                 # Get node position
                 node_position = (current_node.position[0] + new_position[0], current_node.position[1] + new_position[1])
 
                 # Make sure within range
-                if node_position[0] > (len(array) - 1) or node_position[0] < 0 or node_position[1] > (len(array[len(array)-1]) -1) or node_position[1] < 0:
+                if node_position[0] > (len(mesh) - 1) or node_position[0] < 0 or node_position[1] > (len(mesh[len(mesh)-1]) -1) or node_position[1] < 0:
                     continue
 
                 # Make sure walkable terrain
-                if array[node_position[0]][node_position[1]] != 0:
+                if mesh[node_position[0]][node_position[1]] != 0:
                     continue
 
                 # Create new node
@@ -110,11 +136,9 @@ class AStar(Pathfinding):
 
             # Loop through children
             for child in children:
-
                 # Child is on the closed list
-                for closed_child in closed_list:
-                    if child == closed_child:
-                        continue
+                if len([closed_child for closed_child in closed_list if closed_child == child]) > 0:
+                    continue
 
                 # Create the f, g, and h values
                 child.g = current_node.g + 1
@@ -122,12 +146,11 @@ class AStar(Pathfinding):
                 child.f = child.g + child.h
 
                 # Child is already in the open list
-                for open_node in open_list:
-                    if child == open_node and child.g > open_node.g:
-                        continue
+                if len([open_node for open_node in open_list if child.position == open_node.position and child.g > open_node.g]) > 0:
+                    continue
 
                 # Add the child to the open list
-                open_list.append(child)
+                heapq.heappush(open_list, child)
 
-
-
+        warnings.warn("Couldn't get a path to destination")
+        return None
