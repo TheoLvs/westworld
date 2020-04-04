@@ -17,3 +17,12 @@ extra:
       link: 'https://twitter.com/theolvsdc'
     - type: 'linkedin'
       link: 'https://www.linkedin.com/in/th%C3%A9o-alves-da-costa-09397a82/'
+
+
+
+nav:
+  - Introduction: index.md
+  - Resources:
+    - pathfinding.md
+    - resources.md
+    - inspiration.md

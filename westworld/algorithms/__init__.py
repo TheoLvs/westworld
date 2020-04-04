@@ -1,0 +1,1 @@
+from .pathfinding.astar import AStar

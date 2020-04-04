@@ -22,7 +22,7 @@ class Node:
 
 
     def __repr__(self):
-        return f"Node({self.position})"
+        return f"{self.position}"
 
 
 
@@ -57,8 +57,13 @@ class AStar(Pathfinding):
         # Add the start node
         open_list.append(start_node)
 
+        i = 0
+
         # Loop until you find the end
         while len(open_list) > 0:
+
+            print(len(open_list))
+            i += 1
 
             # Get the current node
             current_node = open_list[0]
@@ -79,6 +84,7 @@ class AStar(Pathfinding):
                 while current is not None:
                     path.append(current.position)
                     current = current.parent
+                print(i)
                 return path[::-1] # Return reversed path
 
             # Generate children

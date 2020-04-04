@@ -2,6 +2,7 @@
 
 import numpy as np
 import pygame
+import itertools
 
 from ..base_object import BaseObject
 
@@ -38,7 +39,12 @@ class Rectangle(BaseObject):
 
     @property
     def pos_array(self):
-        return self.y,self.x
+        # TODO see if faster not as property but attribute
+        xs = range(self.x,self.x + self.width)
+        ys = range(self.y,self.y + self.height)
+
+        pos = list(itertools.product(ys,xs))
+        return pos
 
 
     @property

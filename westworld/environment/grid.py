@@ -145,6 +145,7 @@ class GridEnvironment(SpatialEnvironment):
         # Get all blocking objects
         object_id = "" if obj is None else obj.id
         positions = [x.pos_array for x in self.objects if (x.id != object_id and x.blocking)]
+        positions = [y for x in positions for y in x]
 
         # Update mesh with blocking positions
         mesh[tuple(np.array(positions).T)] = 1
