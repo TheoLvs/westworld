@@ -32,6 +32,12 @@ class GridAgent(Rectangle):
         return self.move(angle = self.direction_angle,dr = dr,env = env)
 
 
+    def move_at(self,x,y,env = None):
+        dx = x - self.x
+        dy = y - self.y 
+        self.move(dx = dx,dy = dy,env = env)
+
+
     def move(self,dx = 0,dy = 0,angle = None,dr = None,env = None):
 
         # Store default value for collisions
