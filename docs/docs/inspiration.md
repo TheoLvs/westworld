@@ -2,7 +2,7 @@
 
 ## Software alternatives
 - Unity
-- NetLogo
+- [NetLogo](https://ccl.northwestern.edu/netlogo/)
 - [MESA](https://github.com/projectmesa/mesa) - Python
 - [SPADE](https://spade-mas.readthedocs.io/en/latest/readme.html) - Python
 - [abcEconomics](https://abce.readthedocs.io/en/master/)
