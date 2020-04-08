@@ -3,12 +3,20 @@
 import pygame
 import time
 import imageio
+from pathlib import Path
+
 class Simulation:
 
-    def __init__(self,env,fps = 10):
+    def __init__(self,env,fps = 10,name = None):
+
         self.env = env
         self.fps = fps
         self._reset_frame_cache()
+
+        name = self.__class__.__name__ if name is None else name
+        self.name = f"{name}_{int(time.time())}"
+    
+
 
     def _reset_frame_cache(self):
         self.frame_cache = []
@@ -37,6 +45,8 @@ class Simulation:
         if save is not None:
             if save == True:
                 filepath = None
+            elif save == False:
+                return None
             elif isinstance(save,str):
                 filepath = save
             else:
@@ -46,13 +56,15 @@ class Simulation:
                 frames = self.frame_cache
 
             if filepath is None:
-                filepath = f"{int(time.time())}.gif"
 
-            print("[INFO] Saving gif")
+                filepath = f"{self.name}.gif"
+
+            img_dir = Path("./captures")
+            img_dir.mkdir(exist_ok=True)
+            filepath = f"./captures/{filepath}"
+
+            print(f"[INFO] Saving gif at {filepath}")
             imageio.mimsave(filepath,frames,fps=self.fps)
-
-
-
 
 
 
@@ -80,9 +92,8 @@ class Simulation:
             # Quitting loop
             for event in pygame.event.get():
 
-                # Quit if keydown
-                if event.type == pygame.KEYDOWN:
-                    simulation_on = False
+                # Launch functions that can be overridden
+                self.on_event(event)
 
                 # Quit if click on QUIT
                 if event.type == pygame.QUIT:
@@ -98,8 +109,24 @@ class Simulation:
         # Saving simulation as gif
         self.save_simulation_gif(save = save)
 
-        # Quitting pygame to end the simulation
-        pygame.quit()
+
+    def get_mouse_pos(self):
+        # TODO could be in the environment class
+        x,y = pygame.mouse.get_pos()
+        x = x // self.env.box_size
+        y = y // self.env.box_size
+        return x,y 
+
+    def event_is_click(self,event):
+        LEFT = 1
+        return event.type == pygame.MOUSEBUTTONDOWN and event.button == LEFT
+
+    def event_is_rightclick(self,event):
+        RIGHT = 3
+        return event.type == pygame.MOUSEBUTTONDOWN and event.button == RIGHT
+
+    def on_event(self):
+        pass
 
 
 

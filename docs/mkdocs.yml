@@ -7,6 +7,9 @@ theme:
     primary: 'brown'
 markdown_extensions:
   - admonition
+  - codehilite
+  - pymdownx.details
+  - pymdownx.superfences
 repo_name: 'theolvs/westworld'
 repo_url: 'https://github.com/TheoLvs/westworld'
 extra:
@@ -22,6 +25,8 @@ extra:
 
 nav:
   - Introduction: index.md
+  - Examples:
+    - Simple pathfinding simulations: examples/simple_pathfinding.md
   - Resources:
     - pathfinding.md
     - resources.md
