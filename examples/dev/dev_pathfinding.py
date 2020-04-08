@@ -17,7 +17,8 @@ class Agent(GridAgent):
 
     def step(self,env):
 
-        self.move(dx = 1,env = env)
+        # self.move(dx = 1,env = env)
+        self.move_towards(obj = triggers[0],env = env)
 
 
 agents = [
