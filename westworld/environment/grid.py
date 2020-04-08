@@ -1,5 +1,6 @@
 
 import numpy as np
+from PIL import Image
 import pygame
 
 # Custom libraries
@@ -172,6 +173,11 @@ class GridEnvironment(SpatialEnvironment):
     #=================================================================================
 
     def setup_screen(self):
+
+        # Init pygame window
+        pygame.init()
+        pygame.display.set_caption("Westworld environment")
+
         self.screen = pygame.display.set_mode((
             self.width * self.box_size,
             self.height * self.box_size
@@ -193,6 +199,24 @@ class GridEnvironment(SpatialEnvironment):
             el.render(self)
 
         pygame.display.update()
+
+
+
+    def get_frame(self):
+        return pygame.surfarray.array3d(self.screen).swapaxes(0,1)
+
+
+    def get_img(self):
+        img = self.get_frame()
+        return Image.fromarray(img)
+
+
+    def save_img(self,filepath):
+        img = self.get_img()
+        img.save(filepath)
+
+
+        
 
 
 

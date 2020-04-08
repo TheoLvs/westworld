@@ -71,8 +71,11 @@ class GridAgent(Rectangle):
         # Move to next position in the path
         # First element is the current position
         # Warning coordinates are reversed in numpy arrays
-        y,x = path[1]
-        self.move_at(x,y,env = env)
+        if len(path) > 1:
+            y,x = path[1]
+            self.move_at(x,y,env = env)
+        else:
+            pass
 
 
     def move(self,dx = 0,dy = 0,angle = None,dr = None,env = None):

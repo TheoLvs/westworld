@@ -1,0 +1,6 @@
+pygame
+array2gif
+numpy
+
+mkdocs
+mknotebooks
