@@ -61,5 +61,4 @@ env.spawn(agent_spawner,100)
 
 # Setup simulation
 sim = LargeSimulation(env,fps = 25)
-
 sim.run_episode(n_steps = 250,save = True)
