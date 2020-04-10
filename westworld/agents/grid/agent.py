@@ -10,7 +10,7 @@ class GridAgent(Rectangle):
     def __init__(self,x,y,width = 1,height = 1,box_size = None,color = (255,0,0),circle = False,diagonal = False):
         super().__init__(x,y,width,height,box_size,color,circle)
 
-        self.change_direction()
+        self.set_direction()
 
         # Movement description
         self.diagonal = diagonal
@@ -30,8 +30,15 @@ class GridAgent(Rectangle):
     # MOVEMENTS
     #=================================================================================
 
-    def change_direction(self):
+    def set_direction(self):
         self.direction_angle = np.random.uniform(0,2*np.pi)
+
+
+    def explore(self):
+        pass
+
+    def wander(self):
+        pass
 
     def follow_direction(self,dr = 1,env = None):
         return self.move(angle = self.direction_angle,dr = dr,env = env)
