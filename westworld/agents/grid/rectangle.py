@@ -5,6 +5,7 @@ import pygame
 import itertools
 
 from ..base_object import BaseObject
+from ...colors import *
 
 
 
@@ -21,6 +22,7 @@ class Rectangle(BaseObject):
         self.box_size = box_size
         self.color = color
         self.circle = circle
+
 
 
     def __repr__(self):
@@ -76,8 +78,8 @@ class Rectangle(BaseObject):
     def center(self):
         radius = self.radius
         return (
-            self.x * self.box_size + radius,
-            self.y * self.box_size + radius,
+            int(self.x * self.box_size + radius),
+            int(self.y * self.box_size + radius),
         )
 
     @property
@@ -149,4 +151,8 @@ class Rectangle(BaseObject):
 
             # Draw a circle on the grid using pygame
             pygame.draw.circle(env.screen,self.color,self.center,self.radius)
+
+
+        if hasattr(self,"vision_range") and self.vision_range is not None:
+            pygame.draw.circle(env.screen,WHITE,self.center,int(self.vision_range * self.box_size),1)
 

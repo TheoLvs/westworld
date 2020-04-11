@@ -165,7 +165,7 @@ class GridEnvironment(SpatialEnvironment):
 
         for agent in self.agents:
             agent.step(self)
-
+            agent.clocktick()
 
 
     #=================================================================================

@@ -11,6 +11,7 @@ import random
 from westworld.environment.grid import GridEnvironment
 from westworld.agents.grid import GridAgent,Obstacle,Trigger
 from westworld.simulation.simulation import Simulation
+from westworld.colors import *
 
 BOX_SIZE = 20
 WIDTH = 50
@@ -40,7 +41,7 @@ class Agent(GridAgent):
     def step(self,env):
 
         # self.move(dx = 1,env = env)
-        self.move_towards(x = self.target[0],y = self.target[1],env = env,n = 15)
+        self.wander(env = env)
 
 
 
@@ -65,14 +66,20 @@ class PathfindingSimulationZones(Simulation):
 
 
 
-agent_spawner = lambda x,y : Agent(x,y,1,1,BOX_SIZE)
+agent_spawner = lambda x,y : Agent(x,y,1,1,BOX_SIZE,color = GREEN,curiosity = 100,vision_range = 3)
+agent_spawner2 = lambda x,y : Agent(x,y,1,1,BOX_SIZE,color = RED,curiosity = 10,vision_range = 10)
+
 obstacle_spawner = lambda x,y : Obstacle(x,y,5,5,BOX_SIZE,(0,200,100))
 obstacles = []
 
+
+
+
 # Setup grid
 env = GridEnvironment(BOX_SIZE,WIDTH,HEIGHT,objects = obstacles)
-env.spawn(agent_spawner,10)
+env.spawn(agent_spawner,3)
+env.spawn(agent_spawner2,3)
 
 # Setup simulation
-sim = PathfindingSimulationZones(env,fps = 25)
+sim = PathfindingSimulationZones(env,fps = 10)
 sim.run_episode(n_steps = 250,save = False)

@@ -109,6 +109,9 @@ class Simulation:
         # Saving simulation as gif
         self.save_simulation_gif(save = save)
 
+        # Quit simulation
+        self.env.quit()
+
 
     def get_mouse_pos(self):
         # TODO could be in the environment class
@@ -125,7 +128,7 @@ class Simulation:
         RIGHT = 3
         return event.type == pygame.MOUSEBUTTONDOWN and event.button == RIGHT
 
-    def on_event(self):
+    def on_event(self,event):
         pass
 
 
