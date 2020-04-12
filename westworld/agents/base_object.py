@@ -9,6 +9,8 @@ class BaseObject:
         self.id = str(uuid.uuid1())
         self._clock = 0
 
+        self.init()
+
 
     @property
     def clock(self):
@@ -16,3 +18,11 @@ class BaseObject:
 
     def clocktick(self):
         self._clock += 1
+
+
+    def init(self):
+        pass
+
+
+
+    
