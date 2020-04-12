@@ -98,6 +98,22 @@ class Rectangle(BaseObject):
 
 
 
+    def get_data(self):
+        data = {
+            "id":self.id,
+            "pos":self.pos,
+            "type":self.__class__.__name__
+        }
+        
+        if hasattr(self,"attrs"):
+            data = {
+                **data,
+                **{key:getattr(self,key) for key in self.attrs}
+            }
+        
+        return data
+
+
 
     #=================================================================================
     # MOVEMENT
@@ -154,5 +170,7 @@ class Rectangle(BaseObject):
 
 
         if hasattr(self,"vision_range") and self.vision_range is not None:
-            pygame.draw.circle(env.screen,WHITE,self.center,int(self.vision_range * self.box_size),1)
+            if hasattr(self,"show_vision_range"):
+                if self.show_vision_range:
+                    pygame.draw.circle(env.screen,WHITE,self.center,int(self.vision_range * self.box_size),1)
 

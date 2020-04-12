@@ -1,10 +1,12 @@
 
 import numpy as np
+import pandas as pd
 from PIL import Image
 import pygame
 
 # Custom libraries
 from .spatial import SpatialEnvironment
+from ..algorithms.neighbors import NeighborsFinder
 
 BACKGROUND_COLOR = (0, 0, 0)
 
@@ -12,18 +14,20 @@ BACKGROUND_COLOR = (0, 0, 0)
 class GridEnvironment(SpatialEnvironment):
     def __init__(self,box_size = 10,width = 100,height = 60,objects = None):
 
+
+        # Grid Environment parameters
         self.width = width
         self.height = height
         self.box_size = box_size
+        self.setup_screen()
 
+        # Objects initialization
         self.agents = []
         self.static = []
         self.add_object(objects)
 
-        self.setup_screen()
-
-        self.grid = np.zeros((width,height))
-
+        # Init objects data
+        self.set_data()
 
 
     def quit(self):
@@ -35,6 +39,11 @@ class GridEnvironment(SpatialEnvironment):
     def objects(self):
         return self.agents + self.static
 
+
+
+    @property
+    def data(self):
+        return self._data
 
 
 
@@ -125,6 +134,9 @@ class GridEnvironment(SpatialEnvironment):
                         spawned = True
                         self.add_object(obj)
 
+        # Append to data
+        self.set_data()
+
 
 
 
@@ -157,6 +169,57 @@ class GridEnvironment(SpatialEnvironment):
 
 
     #=================================================================================
+    # DATA MANIPULATION
+    #=================================================================================
+
+
+    def _prepare_data(self):
+        # TODO this function is not optimized at all, 
+        # It takes a few ms for only a few agents in the environment
+        # Iteration is quite fast, it's transforming to dataframe that takes time
+        # Yet we can probably use dataframes for faster computing later on, maybe interesting to use faster equivalents
+        # Such a numpy arrays, jax arrays or torch tensors
+        data = [obj.get_data() for obj in self.objects]
+        if len(data) == 0:
+            return None
+        else:
+            data = pd.DataFrame(data).set_index("id")
+            return data
+
+
+    def set_data(self):
+
+        # Update data
+        self._data = self._prepare_data()
+
+        # Update also neighbors finder
+        self.neighbors_finder = NeighborsFinder(self._data)
+
+
+
+
+    #=================================================================================
+    # OBJECTS MANIPULATION
+    #=================================================================================
+
+
+
+    def find_neigbors(self,range):
+        pass
+
+
+    def find_objects_in_range(self,obj,search_range = None):
+        # TODO add parameters to only find objects that matters
+        # For example not using obstacles
+        
+        objects = self.neighbors_finder.find(obj,search_range)
+
+        return objects
+
+
+
+
+    #=================================================================================
     # ENV LIFECYCLE
     #=================================================================================
 
@@ -166,6 +229,9 @@ class GridEnvironment(SpatialEnvironment):
         for agent in self.agents:
             agent.step(self)
             agent.clocktick()
+
+        # Reinitialize data
+        self.set_data()
 
 
     #=================================================================================

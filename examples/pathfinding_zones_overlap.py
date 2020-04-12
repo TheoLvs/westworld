@@ -66,8 +66,8 @@ class PathfindingSimulationZones(Simulation):
 
 
 
-agent_spawner = lambda x,y : Agent(x,y,1,1,BOX_SIZE,color = GREEN,curiosity = 100,vision_range = 3)
-agent_spawner2 = lambda x,y : Agent(x,y,1,1,BOX_SIZE,color = RED,curiosity = 10,vision_range = 10)
+agent_spawner = lambda x,y : Agent(x,y,1,1,BOX_SIZE,color = GREEN,curiosity = 100)
+agent_spawner2 = lambda x,y : Agent(x,y,1,1,BOX_SIZE,color = RED,curiosity = 10)
 
 obstacle_spawner = lambda x,y : Obstacle(x,y,5,5,BOX_SIZE,(0,200,100))
 obstacles = []
@@ -77,8 +77,8 @@ obstacles = []
 
 # Setup grid
 env = GridEnvironment(BOX_SIZE,WIDTH,HEIGHT,objects = obstacles)
-env.spawn(agent_spawner,3)
-env.spawn(agent_spawner2,3)
+env.spawn(agent_spawner,100)
+env.spawn(agent_spawner2,300)
 
 # Setup simulation
 sim = PathfindingSimulationZones(env,fps = 10)
