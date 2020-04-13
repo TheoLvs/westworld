@@ -22,8 +22,7 @@ class GridEnvironment(SpatialEnvironment):
         self.setup_screen()
 
         # Objects initialization
-        self.agents = []
-        self.static = []
+        self._objects = {}
         self.add_object(objects)
 
         # Init objects data
@@ -34,18 +33,24 @@ class GridEnvironment(SpatialEnvironment):
         pygame.quit()
 
 
-
-    @property
-    def objects(self):
-        return self.agents + self.static
-
-
-
     @property
     def data(self):
         return self._data
 
 
+    @property
+    def objects(self):
+        return list(self._objects.values())
+
+
+    def get_object(self,object_id):
+        return self._objects[object_id]
+
+    def remove_object(self,object_id):
+        if isinstance(object_id,str):
+            return self._objects.pop(object_id)
+        else:
+            return self._objects.pop(object_id.id)
 
 
     def add_object(self,obj):
@@ -57,13 +62,10 @@ class GridEnvironment(SpatialEnvironment):
                 for o in obj:
                     self.add_object(o)
                 
-            # Add object to either the static or agent list
+            # Add object 
             else:
-                if obj.static:
-                    self.static.append(obj)
-                else:
-                    self.agents.append(obj)
-
+                self._objects[obj.id] = obj
+                
 
     #=================================================================================
     # COLLIDERS
@@ -226,9 +228,13 @@ class GridEnvironment(SpatialEnvironment):
 
     def step(self):
 
-        for agent in self.agents:
-            agent.step(self)
-            agent.clocktick()
+        # Iterate for each object
+        for agent in self.objects:
+
+            # Only step with non static objects: ie agents
+            if agent.static == False:
+                agent.step(self)
+                agent.clocktick()
 
         # Reinitialize data
         self.set_data()

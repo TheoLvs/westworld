@@ -42,9 +42,6 @@ class EpidemicEnvironment(GridEnvironment):
     def step(self,*args,**kwargs):
         super().step(*args,**kwargs)
 
-        print(len(self.objects),[obj.life for obj in self.objects])
-
-
             
             
 class SimpleEpidemic(Simulation):

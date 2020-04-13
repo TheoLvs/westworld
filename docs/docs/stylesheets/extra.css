@@ -1,0 +1,29 @@
+.md-header{
+    /* background-image: linear-gradient(to left, #30cfd0 0%, #330867 100%); */
+    /* background-image: linear-gradient(to left, #3ab5b0 0%, #3d99be 31%, #56317a 100%); */
+    background-image: linear-gradient(to left, #FF3CAC 0%, #562B7C 52%, #2B86C5 100%);
+}
+
+
+.md-footer{
+    /* background-image: linear-gradient(to left, #3ab5b0 0%, #3d99be 31%, #56317a 100%); */
+    background-image: linear-gradient(to left, #FF3CAC 0%, #562B7C 52%, #2B86C5 100%);
+    /* background-image: linear-gradient(-225deg, #FF3CAC 0%, #562B7C 52%, #2B86C5 100%); */
+    /* background-image: linear-gradient(to left, #30cfd0 0%, #330867 100%); */
+}
+
+
+.md-tabs{
+    background-image: linear-gradient(to left, #FF3CAC 0%, #562B7C 52%, #2B86C5 100%);
+    /* background-image: linear-gradient(to left, #3ab5b0 0%, #3d99be 31%, #56317a 100%); */
+    /* background-image: linear-gradient(-225deg, #FF3CAC 0%, #562B7C 52%, #2B86C5 100%); */
+    /* background-image: linear-gradient(to left, #30cfd0 0%, #330867 100%); */
+}
+
+:root {
+
+
+  /* Primary color shades */
+  --md-primary-fg-color:               #330867;
+
+  }

@@ -1,5 +1,5 @@
 # Westworld
-![](header.jpg)
+![](docs/docs/img/cover_hq_westworld1.jpg)
 
 # Description
 **Westworld** is a multi-agent simulation library, its goal to simulate and optimize systems and environments with multiple agents interacting. Its inspiration is drawn from Unity software and [Unity ML Agents](https://github.com/Unity-Technologies/ml-agents), adapted in Python. 

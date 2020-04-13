@@ -1,10 +1,15 @@
 site_name: Westworld documentation
 site_description: 'Multi-agent simulation library'
 site_author: 'Théo Alves Da Costa'
+edit_uri: ""
 theme:
   name: 'material'
-  palette:
-    primary: 'brown'
+  # palette:
+  #   primary: brown
+  #   accent: brown
+  features:
+    - tabs
+    - instant
 markdown_extensions:
   - admonition
   - codehilite
@@ -12,22 +17,27 @@ markdown_extensions:
   - pymdownx.superfences
 repo_name: 'theolvs/westworld'
 repo_url: 'https://github.com/TheoLvs/westworld'
+
+
 extra:
   social:
-    - type: 'github'
-      link: 'https://github.com/TheoLvs'
-    - type: 'twitter'
-      link: 'https://twitter.com/theolvsdc'
-    - type: 'linkedin'
-      link: 'https://www.linkedin.com/in/th%C3%A9o-alves-da-costa-09397a82/'
+    - icon: fontawesome/brands/github
+      link: https://github.com/TheoLvs
+    - icon: fontawesome/brands/twitter
+      link: https://twitter.com/theolvsdc
+    - icon: fontawesome/brands/linkedin
+      link: https://www.linkedin.com/in/th%C3%A9o-alves-da-costa-09397a82/
 
 
+extra_css:
+  - ./stylesheets/extra.css
 
 nav:
-  - Introduction: index.md
+  - Home: index.md
   - Examples:
-    - Simple pathfinding simulations: examples/simple_pathfinding.md
+    - Simple pathfinding: examples/simple_pathfinding.md
+    - Simple vision range: examples/simple_visionrange.md
   - Resources:
-    - pathfinding.md
-    - resources.md
-    - inspiration.md
+    - resources/pathfinding.md
+    - resources/resources.md
+    - resources/inspiration.md
