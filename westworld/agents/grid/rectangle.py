@@ -11,7 +11,7 @@ from ...colors import *
 
 class Rectangle(BaseObject):
 
-    def __init__(self,x,y,width,height,box_size,color,circle = False):
+    def __init__(self,x,y,width,height,color = (255,0,0),circle = False):
         
         super().__init__()
 
@@ -19,14 +19,12 @@ class Rectangle(BaseObject):
         self.y = y
         self.width = width
         self.height = height
-        self.box_size = box_size
         self.color = color
         self.circle = circle
 
 
     def __repr__(self):
         return f"Rectangle(x={self.x},y={self.y},w={self.width},h={self.height})"
-
 
 
     @property
@@ -86,6 +84,22 @@ class Rectangle(BaseObject):
     def collider(self):
         return pygame.rect.Rect(self.dimensions)
 
+    @property
+    def box_size(self):
+        if hasattr(self,"_box_size"):
+            return self._box_size
+        else:
+            raise Exception("Object must be added to an environment first to setup box size")
+
+
+    def set_env(self,env):
+        self._env = env
+
+        if hasattr(env,"box_size"):
+            self._box_size = env.box_size
+
+
+
 
     def get_collider(self,x,y):
         dimensions = (
@@ -127,6 +141,9 @@ class Rectangle(BaseObject):
 
 
     def collides_with(self,others,collider = None):
+        """Compute collisions between the object and any other objects
+        Returns if there is a collision + the list of object ids in collision
+        """
 
         # In the absence of external colliders
         # We take the internal collider
@@ -139,8 +156,13 @@ class Rectangle(BaseObject):
 
         # Compute collisions using PyGame
         else:
-            other_colliders = [other.collider for other in others if (other.id != self.id and other.blocking)]
-            collisions = collider.collidelistall(other_colliders)
+            other_colliders = [(other.id,other.collider) for other in others if (other.id != self.id and other.blocking)]
+            if len(other_colliders) > 0:
+                ids,other_colliders = list(zip(*other_colliders))
+                collisions = collider.collidelistall(other_colliders)
+                collisions = [ids[i] for i in collisions]
+            else:
+                collisions = []
 
         # Return signal of collision and colliders touched
         if len(collisions) > 0:
@@ -157,20 +179,28 @@ class Rectangle(BaseObject):
     #=================================================================================
 
 
-    def render(self,env):
+    def render(self):
+        """Render function to visualize object in the environment
+        Visualize either a circle or square in any color
+        Vision range can be visualized as well
+
+        TODO: 
+            - Improve visualization not only within PyGame
+            - Visualize with Sprites as well in PyGame 
+        """
 
         if not self.circle:
             # Draw a rectangle on the grid using pygame
-            pygame.draw.rect(env.screen,self.color,self.dimensions)
+            pygame.draw.rect(self.env.screen,self.color,self.dimensions)
 
         else:
 
             # Draw a circle on the grid using pygame
-            pygame.draw.circle(env.screen,self.color,self.center,self.radius)
+            pygame.draw.circle(self.env.screen,self.color,self.center,self.radius)
 
 
         if hasattr(self,"vision_range") and self.vision_range is not None:
             if hasattr(self,"show_vision_range"):
                 if self.show_vision_range:
-                    pygame.draw.circle(env.screen,WHITE,self.center,int(self.vision_range * self.box_size),1)
+                    pygame.draw.circle(self.env.screen,WHITE,self.center,int(self.vision_range * self.box_size),1)
 

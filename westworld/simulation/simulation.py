@@ -4,6 +4,10 @@ import pygame
 import time
 import imageio
 from pathlib import Path
+from tqdm import tqdm_notebook
+from ipywidgets import interact,widgets
+from IPython.display import display 
+from PIL import Image
 
 class Simulation:
 
@@ -68,13 +72,40 @@ class Simulation:
 
 
 
-    def run_episode(self,n_steps = 100,save = None):
+    def replay_episode(self,fps = 5):
+
+        # Prepare widgets
+        play = widgets.Play(
+            value=0,
+            min=0,
+            max=len(self.frame_cache) - 1,
+            step=1,
+            interval=int(1000/fps),
+            description="Press play",
+            disabled=False
+        )
+        slider = widgets.IntSlider(min = 0,value = 0,max = len(self.frame_cache) - 1,step = 1)
+        widgets.jslink((play, 'value'), (slider, 'value'))
+
+        # Visualize frames and widgets
+        @interact(i = play)
+        def show(i):
+            img = Image.fromarray(self.frame_cache[i])
+            return img
+
+        display(slider)
+
+
+    def run_episode(self,n_steps = 100,save = None,replay = False,fps_replay = 5):
 
 
         # Simulation variables
         simulation_on = True
         i = 0
         clock = pygame.time.Clock()
+
+        # Create progress bar
+        progress_bar = tqdm_notebook(total=n_steps)
 
         # Main simulation loop for one episode
         while simulation_on:
@@ -100,17 +131,25 @@ class Simulation:
                     simulation_on = False
 
             # Stopping conditions
-            if i >= n_steps:
+            if i >= n_steps - 1:
                 simulation_on = False
             else:
                 i += 1
 
+            # Update progress bar
+            progress_bar.update(1)
+
 
         # Saving simulation as gif
         self.save_simulation_gif(save = save)
+        progress_bar.close()
 
         # Quit simulation
         self.env.quit()
+
+        # Replay
+        if replay:
+            self.replay_episode(fps = fps_replay)
 
 
     def get_mouse_pos(self):

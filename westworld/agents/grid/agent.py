@@ -7,10 +7,10 @@ from ...algorithms.pathfinding.astar import AStar
 
 
 class GridAgent(Rectangle):
-    def __init__(self,x,y,width = 1,height = 1,box_size = None,color = (255,0,0),circle = False,diagonal = False,
+    def __init__(self,x,y,width = 1,height = 1,color = (255,0,0),circle = False,diagonal = False,
     curiosity = 20,vision_range = None,
     ):
-        super().__init__(x,y,width,height,box_size,color,circle)
+        super().__init__(x,y,width,height,color,circle)
 
 
         # Movement description
@@ -53,11 +53,11 @@ class GridAgent(Rectangle):
     def explore(self):
         pass
 
-    def wander(self,env = None):
+    def wander(self):
 
         # Move using an unit movement (adjacent squares only) but more or less in the direction given by the angle
         dx,dy = self._sample_unit_movement_from_angle(self.direction_angle)
-        self.move(dx = dx,dy = dy,env = env)
+        self.move(dx = dx,dy = dy)
 
         # Change direction based on curiosity value
         if self.clock > 1 and self.clock % self.curiosity == 0:
@@ -111,20 +111,20 @@ class GridAgent(Rectangle):
             return (0,sign_y)
 
 
-    def follow_direction(self,dr = 1,env = None):
+    def follow_direction(self,dr = 1):
         # Will be more suitable for a navigation agent implemented in a future class
         # Grid agent can only move in adjacent squares, eventually diagonals
-        return self.move(angle = self.direction_angle,dr = dr,env = env)
+        return self.move(angle = self.direction_angle,dr = dr)
 
 
-    def move_at(self,x,y,env = None):
+    def move_at(self,x,y):
         dx = x - self.x
         dy = y - self.y 
-        self.move(dx = dx,dy = dy,env = env)
+        self.move(dx = dx,dy = dy)
 
 
 
-    def find_path_towards(self,x = None,y = None,obj = None,env = None,n = None):
+    def find_path_towards(self,x = None,y = None,obj = None,n = None):
 
         # Start position
         start_pos = self.pos_array[0]
@@ -136,17 +136,17 @@ class GridAgent(Rectangle):
             target_pos = y,x
         
         # Prepare mesh
-        mesh = env.get_navigation_mesh(self)
+        mesh = self.env.get_navigation_mesh(self)
 
         # Find path
         path = self.pathfinder.run(mesh,start_pos,target_pos,diagonal=self.diagonal,n=n)
         return path
 
 
-    def move_towards(self,x = None,y = None,obj = None,env = None,n = None):
+    def move_towards(self,x = None,y = None,obj = None,n = None):
 
         # Find path with pathfinding algorithm
-        path = self.find_path_towards(x,y,obj,env,n)
+        path = self.find_path_towards(x,y,obj,n)
 
         # Move to next position in the path
         # First element is the current position
@@ -154,12 +154,12 @@ class GridAgent(Rectangle):
         if path is not None:
             if len(path) > 1:
                 y,x = path[1]
-                self.move_at(x,y,env = env)
+                self.move_at(x,y)
             else:
                 pass
 
 
-    def move(self,dx = 0,dy = 0,angle = None,dr = None,env = None):
+    def move(self,dx = 0,dy = 0,angle = None,dr = None):
 
         # Store default value for collisions
         is_collision = False
@@ -167,43 +167,35 @@ class GridAgent(Rectangle):
         # Move using radial movement (with angle and radius)
         if angle is not None:
 
-            box_size = 1 if env is None else env.box_size
+            box_size = self.box_size
 
             # Compute delta directions with basic trigonometry
             # In a grid environment, movement is rounded to the integer to fit in the grid
             dx = int(dr * box_size * np.cos(angle))
             dy = int(dr * box_size * np.sin(angle))
 
-            return self.move(dx = dx,dy = dy,env = env)
+            return self.move(dx = dx,dy = dy)
 
         # Move using euclidean movement (with dx and dy)
         else:
-
-            if env is None: 
                 
-                # If movement is not bounded by environment
-                # We update position without constraints
-                self.x += dx
-                self.y += dy
+            # Store movements
+            x = self.x + dx
+            y = self.y + dy
 
-            else:
-                
-                # Store movements
-                x = self.x + dx
-                y = self.y + dy
+            # Correct moves going offscreen
+            # TODO use this function only in toroidal environments
+            x,y = self.env.correct_offscreen_move(x,y)
 
-                # Correct moves going offscreen
-                x,y = env.correct_offscreen_move(x,y)
+            # Compute collisions
+            collider = self.get_collider(x,y)
+            is_collision,_ = self.collides_with(self.env.objects,collider = collider)
 
-                # Compute collisions
-                collider = self.get_collider(x,y)
-                is_collision,_ = self.collides_with(env.objects,collider = collider)
+            if not is_collision:
 
-                if not is_collision:
-
-                    # Store new positions as attributes
-                    self.x = x
-                    self.y = y
+                # Store new positions as attributes
+                self.x = x
+                self.y = y
 
                     
 
@@ -213,12 +205,12 @@ class GridAgent(Rectangle):
 
 
 
-    def random_walk(self,env = None):
+    def random_walk(self):
 
         # Sample a random move between -1, 0 or + 1
         # ie 8 moves around agent's position
         dx,dy = np.random.randint(0,3,2) - 1
-        self.move(dx,dy,env = env)
+        self.move(dx,dy)
 
 
 

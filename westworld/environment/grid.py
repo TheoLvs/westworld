@@ -64,6 +64,9 @@ class GridEnvironment(SpatialEnvironment):
                 
             # Add object 
             else:
+                
+                # Set environment as attribute for easy manipulation
+                obj.set_env(self)
                 self._objects[obj.id] = obj
                 
 
@@ -233,7 +236,7 @@ class GridEnvironment(SpatialEnvironment):
 
             # Only step with non static objects: ie agents
             if agent.static == False:
-                agent.step(self)
+                agent.step()
                 agent.clocktick()
 
         # Reinitialize data
@@ -268,7 +271,7 @@ class GridEnvironment(SpatialEnvironment):
         self.reset_screen()
 
         for el in self.objects:
-            el.render(self)
+            el.render()
 
         pygame.display.update()
 
