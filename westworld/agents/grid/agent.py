@@ -24,7 +24,7 @@ class GridAgent(Rectangle):
  
 
     @property
-    def static(self):
+    def stationary(self):
         return False
 
 

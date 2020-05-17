@@ -235,11 +235,13 @@ class GridEnvironment(SpatialEnvironment):
         for agent in self.objects:
 
             # Only step with non static objects: ie agents
-            if agent.static == False:
+            if agent.stationary == False:
                 agent.step()
                 agent.clocktick()
 
         # Reinitialize data
+        # TODO this can be optional for performance
+        # Actually it's only required for computations such as pathfinding
         self.set_data()
 
 
@@ -248,45 +250,72 @@ class GridEnvironment(SpatialEnvironment):
     #=================================================================================
 
     def setup_screen(self):
+        """Setup the first PyGame Screen
+        """
 
         # Init pygame window
         pygame.init()
         pygame.display.set_caption("Westworld environment")
 
+        # Create window
         self.screen = pygame.display.set_mode((
             self.width * self.box_size,
             self.height * self.box_size
             ))
 
+        # Fill with black
         self.reset_screen()
 
 
     def reset_screen(self):
+        """Reset PyGame screen by filling with BLACK color
+        """
         self.screen.fill(BACKGROUND_COLOR)
 
 
 
     def render(self):
+        """Render the environment
+        TODO: could be without PyGame
+        """
 
+        # Reset current screen to black
         self.reset_screen()
 
+        # Render each object
         for el in self.objects:
             el.render()
 
+        # Update the PyGame renderer
         pygame.display.update()
 
 
 
     def get_frame(self):
+        """Get the current frame as numpy array
+
+        Returns:
+            np.ndarray: The current frame as numpy array
+        """
         return pygame.surfarray.array3d(self.screen).swapaxes(0,1)
 
 
     def get_img(self):
+        """Get the current frame as PIL image
+
+        Returns:
+            PIL.Image: The current frame as PIL Image
+        """
         img = self.get_frame()
         return Image.fromarray(img)
 
 
     def save_img(self,filepath):
+        """Save the current frame in a picture file (eg .png)
+
+        Args:
+            filepath (str): The output filename
+        """
         img = self.get_img()
         img.save(filepath)
 

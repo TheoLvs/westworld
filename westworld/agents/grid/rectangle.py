@@ -48,7 +48,7 @@ class Rectangle(BaseObject):
 
 
     @property
-    def static(self):
+    def stationary(self):
         return True
 
 

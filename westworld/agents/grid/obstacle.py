@@ -10,3 +10,7 @@ class Obstacle(Rectangle):
     @property
     def blocking(self):
         return True
+
+    @property
+    def stationary(self):
+        return True

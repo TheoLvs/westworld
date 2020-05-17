@@ -16,19 +16,21 @@ class Trigger(Rectangle):
 
 
     @property
-    def static(self):
+    def stationary(self):
         return False
 
 
     def step(self):
 
-        is_collision,x = self.collides_with(self.env.objects)
+        # Find collisions
+        is_collision,objects = self.collides_with(self.env.objects)
         
+        # Trigger callback
         if is_collision:
-            print(x)
-            self.on_collision()
+            self.on_collision(objects)
 
 
 
-    def on_collision(self):
-        print("Collision")
+
+    def on_collision(self,objects):
+        print(f"Collision with objects {objects}")
