@@ -107,6 +107,10 @@ class Simulation:
         # Create progress bar
         progress_bar = tqdm_notebook(total=n_steps)
 
+        # Cache first frame if needed
+        if save is not None:
+            self.cache_frame()
+
         # Main simulation loop for one episode
         while simulation_on:
 

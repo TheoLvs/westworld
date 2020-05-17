@@ -1,11 +1,11 @@
 
 
 
-from .rectangle import Rectangle
+from .rectangle import BaseRectangle
 
 
 
-class Obstacle(Rectangle):
+class BaseObstacle(BaseRectangle):
 
     @property
     def blocking(self):

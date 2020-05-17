@@ -44,7 +44,14 @@ class GridEnvironment(SpatialEnvironment):
 
 
     def get_object(self,object_id):
-        return self._objects[object_id]
+        if isinstance(object_id,str):
+            return self._objects[object_id]
+        else:
+            return self._objects[object_id.id]
+
+
+    def __getitem__(self,object_id):
+        return self.get_object(object_id)
 
     def remove_object(self,object_id):
         if isinstance(object_id,str):

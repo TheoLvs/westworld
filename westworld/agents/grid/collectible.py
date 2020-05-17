@@ -2,10 +2,10 @@
 
 
 
-from .trigger import Trigger
+from .trigger import BaseTrigger
 
 
-class Collectible(Trigger):
+class BaseCollectible(BaseTrigger):
     """Collectible objects in an environment
     Collectibles are objects an agent can find, after having been found the object disappears
     Eg: Pacman or Snake
@@ -22,13 +22,14 @@ class Collectible(Trigger):
 
         # Find collisions
         is_collision,objects = self.collides_with(self.env.objects)
+        assert len(objects) <= 1
         
         # Trigger callback
         if is_collision:
             self.on_collision(objects)
 
-        # Remove object from the environment
-        self.env.remove_object(self)
+            # Remove object from the environment
+            self.env.remove_object(self)
 
 
 

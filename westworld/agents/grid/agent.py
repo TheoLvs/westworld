@@ -2,11 +2,11 @@
 import numpy as np
 import pygame
 
-from .rectangle import Rectangle
+from .rectangle import BaseRectangle
 from ...algorithms.pathfinding.astar import AStar
 
 
-class GridAgent(Rectangle):
+class BaseAgent(BaseRectangle):
     def __init__(self,x,y,width = 1,height = 1,color = (255,0,0),circle = False,diagonal = False,
     curiosity = 20,vision_range = None,
     ):

@@ -9,7 +9,7 @@ from ...colors import *
 
 
 
-class Rectangle(BaseObject):
+class BaseRectangle(BaseObject):
 
     def __init__(self,x,y,width,height,color = (255,0,0),circle = False):
         

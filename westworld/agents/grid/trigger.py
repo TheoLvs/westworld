@@ -3,11 +3,11 @@
 
 
 
-from .rectangle import Rectangle
+from .rectangle import BaseRectangle
 
 
 
-class Trigger(Rectangle):
+class BaseTrigger(BaseRectangle):
 
 
     @property
