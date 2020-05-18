@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 from PIL import Image
 import pygame
+import random
 
 # Custom libraries
 from .spatial import SpatialEnvironment
@@ -77,6 +78,36 @@ class GridEnvironment(SpatialEnvironment):
                 self._objects[obj.id] = obj
                 
 
+
+    def find_objects(self,condition,return_pos = False,return_objects = False,**kwargs):
+        # TODO is it faster with numpy or pandas
+        # The loop could be accelerated with numba?
+        ids = []
+        
+        def helper_check_fn(obj,k,v):
+            if not hasattr(obj,k):
+                return False
+            else:
+                return getattr(obj,k) == v
+
+        for obj in self.objects:
+            if all([helper_check_fn(obj,k,v) for k,v in condition.items()]):
+                ids.append(obj.id)
+
+        if return_pos:
+            return [self._objects[k].pos for k in ids]
+        elif return_objects:
+            return [self._objects[k] for k in ids]
+        else:
+            return ids
+
+
+
+
+
+
+
+
     #=================================================================================
     # COLLIDERS
     #=================================================================================
@@ -117,34 +148,20 @@ class GridEnvironment(SpatialEnvironment):
 
 
 
-    def spawn(self,spawner,n,overlap = False,**kwargs):
+    def spawn(self,spawner,n,allow_overlap = False,**kwargs):
+        """Spawner function
+        """
 
         # Spawn n elements (works also with n = 1)
         for i in range(n):
 
-            spawned = False
+            # Generate a random position considering or not overlaps
+            x,y = self.get_random_available_pos(allow_overlap = allow_overlap)
 
-            while not spawned:
-
-                # Generate random position
-                x = np.random.randint(0,self.width)
-                y = np.random.randint(0,self.height)
-
-                # Spawn new object using spawner
-                # Pass also kwargs to spawner
-                obj = spawner(x,y,**kwargs)
-
-                # If we don't care about overlapping when spawning
-                # Just add new object to the queue 
-                if overlap:
-                    spawned = True
-                    self.add_object(obj)
-
-                # If we don't want overlapping, we use collisions to spawn efficiently new objects
-                else:
-                    if not self.is_object_colliding(obj):
-                        spawned = True
-                        self.add_object(obj)
+            # Spawn new object using spawner
+            # Pass also kwargs to spawner
+            obj = spawner(x,y,**kwargs)
+            self.add_object(obj)
 
         # Append to data
         self.set_data()
@@ -173,10 +190,44 @@ class GridEnvironment(SpatialEnvironment):
         positions = [y for x in positions for y in x]
 
         # Update mesh with blocking positions
+        if len(positions) > 0:
+            mesh[tuple(np.array(positions).T)] = 1
+
+        return mesh
+
+    def get_available_mesh(self):
+
+        # Prepare empty mesh        
+        mesh = self.get_grid()
+
+        # Get all blocking objects
+        positions = [y for x in self.objects for y in x.pos_array]
+
+        # Update mesh with blocking positions
         mesh[tuple(np.array(positions).T)] = 1
 
         return mesh
 
+
+    def get_available_pos(self):
+
+        # Get mesh
+        mesh = self.get_available_mesh()
+
+        # Return list of pos
+        return np.array(np.where(mesh == 0)).T
+
+
+    def get_random_available_pos(self,allow_overlap = False):
+
+        if allow_overlap:
+            x = np.random.randint(0,self.width)
+            y = np.random.randint(0,self.height)
+        else:
+            # Warning x,y are reversed in numpy
+            pos = self.get_available_pos()
+            y,x = random.choice(pos)
+        return x,y
 
 
 

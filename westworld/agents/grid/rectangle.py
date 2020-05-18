@@ -56,6 +56,12 @@ class BaseRectangle(BaseObject):
     def blocking(self):
         return True
 
+
+    @property
+    def obstacle(self):
+        return self.stationary and self.blocking
+
+
     @property
     def dimensions(self):
         return (
