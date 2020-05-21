@@ -21,7 +21,7 @@ class NeighborsFinder:
             self.tree = KDTree(self.data["pos"].tolist())
 
 
-    def find(self,obj,search_range = None):
+    def find_in_range(self,obj,search_range):
 
         # TODO 
         # Will not work with double colliders
@@ -29,22 +29,37 @@ class NeighborsFinder:
 
         # Safety check
         assert hasattr(self,"tree")
-        obj_data = self.data.loc[obj.id]
 
         # Get position from dataset
-        pos = obj_data["pos"]
-
-        # Get vision_range if not given
-        if search_range is None:
-            try:
-                search_range = obj_data["vision_range"]
-            except:
-                raise Exception(f"Object '{obj.id}' has no data attribute 'vision_range'")
+        pos = obj.pos
 
         # Find neighbors in range
         # We remove the first one which is the identity object
-        neighbors = self.tree.query_ball_point(pos,search_range)[1:]
+        idx = self.tree.query_ball_point(pos,search_range)
         
         # Return filtered data
-        neighbors = self.data.iloc[neighbors]
-        return neighbors
+        ids = self.data.iloc[idx].index.tolist()
+        assert obj.id not in ids
+        return ids
+
+
+    def find_closest(self,obj,k = 1):
+
+        # Safety check
+        assert hasattr(self,"tree")
+
+        # Get object position from which we want to find neighbors
+        pos = obj.pos
+
+        # Get position from dataset
+        distances,idx = self.tree.query(pos,k = k)
+
+        if k == 1:
+            distances = [distances]
+            idx = [idx]
+
+        # Get ids from dataset
+        # Safe check object is not in neighbors, which would mean above we remove another overlapping objects with [1:]
+        ids = self.data.iloc[idx].index.tolist()
+        assert obj.id not in ids
+        return distances,ids

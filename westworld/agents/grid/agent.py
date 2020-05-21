@@ -4,6 +4,7 @@ import pygame
 
 from .rectangle import BaseRectangle
 from ...algorithms.pathfinding.astar import AStar
+from ...algorithms.neighbors import NeighborsFinder
 
 
 class BaseAgent(BaseRectangle):
@@ -131,6 +132,8 @@ class BaseAgent(BaseRectangle):
 
         # Prepare target position
         if obj is not None:
+            if isinstance(obj,str):
+                obj = self.env[obj]
             target_pos = obj.pos_array[0]
         else:
             target_pos = y,x
@@ -214,3 +217,41 @@ class BaseAgent(BaseRectangle):
 
 
 
+    #=================================================================================
+    # FINDER
+    #=================================================================================
+
+
+    def find_closest(self,k = 1,condition = None):
+
+        # Get objects data we want to search
+        objects_data = self.env.find_objects(condition = condition,return_data = True)
+        objects_data = objects_data.drop(self.id,errors = "ignore")
+
+        # Create neighbors algorithm
+        finder = NeighborsFinder(objects_data)
+        distances,ids = finder.find_closest(self,k = k)
+
+        return distances,ids
+
+
+
+
+    def find_in_range(self,search_range = None,condition = None):
+        # TODO add parameters to only find objects that matters
+        # For example not using obstacles
+        # Easily done by appending to condition to add obstacles = False
+
+        if search_range is None:
+            search_range = self.vision_range
+            assert self.vision_range is not None
+
+        # Find objects data
+        objects_data = self.env.find_objects(condition = condition,return_data = True)
+        objects_data = objects_data.drop(self.id,errors = "ignore")
+
+        # Create finder algorithm
+        finder = NeighborsFinder(objects_data)
+        ids = finder.find_in_range(self,search_range)
+
+        return ids

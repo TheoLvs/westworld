@@ -79,25 +79,31 @@ class GridEnvironment(SpatialEnvironment):
                 
 
 
-    def find_objects(self,condition,return_pos = False,return_objects = False,**kwargs):
+    def find_objects(self,condition = None,return_pos = False,return_objects = False,return_data = False,**kwargs):
         # TODO is it faster with numpy or pandas
         # The loop could be accelerated with numba?
         ids = []
-        
-        def helper_check_fn(obj,k,v):
-            if not hasattr(obj,k):
-                return False
-            else:
-                return getattr(obj,k) == v
 
-        for obj in self.objects:
-            if all([helper_check_fn(obj,k,v) for k,v in condition.items()]):
-                ids.append(obj.id)
+        if condition is None:
+            ids = [x.id for x in self.objects]
+        else:
+            def helper_check_fn(obj,k,v):
+                if not hasattr(obj,k):
+                    return False
+                else:
+                    return getattr(obj,k) == v
+
+            for obj in self.objects:
+                if all([helper_check_fn(obj,k,v) for k,v in condition.items()]):
+                    ids.append(obj.id)
+                
 
         if return_pos:
             return [self._objects[k].pos for k in ids]
         elif return_objects:
             return [self._objects[k] for k in ids]
+        elif return_data:
+            return self.data.loc[ids]
         else:
             return ids
 
@@ -256,28 +262,10 @@ class GridEnvironment(SpatialEnvironment):
         self._data = self._prepare_data()
 
         # Update also neighbors finder
-        self.neighbors_finder = NeighborsFinder(self._data)
+        # self.neighbors_finder = NeighborsFinder(self._data)
 
 
 
-
-    #=================================================================================
-    # OBJECTS MANIPULATION
-    #=================================================================================
-
-
-
-    def find_neigbors(self,range):
-        pass
-
-
-    def find_objects_in_range(self,obj,search_range = None):
-        # TODO add parameters to only find objects that matters
-        # For example not using obstacles
-        
-        objects = self.neighbors_finder.find(obj,search_range)
-
-        return objects
 
 
 
