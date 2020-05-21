@@ -37,10 +37,12 @@ class Simulation:
         """
 
         # Step for the environment
-        self.env.step()
+        reward,done = self.env.step()
 
         # Render all objects in the environment
         self.env.render()
+
+        return reward,done
 
 
     def save_simulation_gif(self,save,frames = None,filepath = None):
@@ -115,7 +117,7 @@ class Simulation:
         while simulation_on:
 
             # Main step function
-            self.step()
+            reward,done = self.step()
 
             # Cache frame if needed
             if save is not None:
@@ -142,6 +144,10 @@ class Simulation:
 
             # Update progress bar
             progress_bar.update(1)
+
+            # Stop simulation if done is signaled in the inner loop
+            if done:
+                simulation_on = False
 
 
         # Saving simulation as gif

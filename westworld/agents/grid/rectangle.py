@@ -11,7 +11,7 @@ from ...colors import *
 
 class BaseRectangle(BaseObject):
 
-    def __init__(self,x,y,width,height,color = (255,0,0),circle = False):
+    def __init__(self,x,y,width = 1,height = 1,color = (255,0,0),circle = False):
         
         super().__init__()
 

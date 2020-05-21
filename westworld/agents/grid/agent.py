@@ -227,12 +227,15 @@ class BaseAgent(BaseRectangle):
         # Get objects data we want to search
         objects_data = self.env.find_objects(condition = condition,return_data = True)
         objects_data = objects_data.drop(self.id,errors = "ignore")
+        
+        if len(objects_data) == 0:
+            return [],[]
+        else:
+            # Create neighbors algorithm
+            finder = NeighborsFinder(objects_data)
+            distances,ids = finder.find_closest(self,k = k)
 
-        # Create neighbors algorithm
-        finder = NeighborsFinder(objects_data)
-        distances,ids = finder.find_closest(self,k = k)
-
-        return distances,ids
+            return distances,ids
 
 
 
@@ -250,8 +253,11 @@ class BaseAgent(BaseRectangle):
         objects_data = self.env.find_objects(condition = condition,return_data = True)
         objects_data = objects_data.drop(self.id,errors = "ignore")
 
-        # Create finder algorithm
-        finder = NeighborsFinder(objects_data)
-        ids = finder.find_in_range(self,search_range)
+        if len(objects_data) == 0:
+            return []
+        else:
+            # Create finder algorithm
+            finder = NeighborsFinder(objects_data)
+            ids = finder.find_in_range(self,search_range)
 
-        return ids
+            return ids

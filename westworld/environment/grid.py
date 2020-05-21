@@ -13,7 +13,7 @@ BACKGROUND_COLOR = (0, 0, 0)
 
 
 class GridEnvironment(SpatialEnvironment):
-    def __init__(self,box_size = 10,width = 100,height = 60,objects = None):
+    def __init__(self,width = 100,height = 60,box_size = 10,objects = None):
 
 
         # Grid Environment parameters
@@ -24,6 +24,7 @@ class GridEnvironment(SpatialEnvironment):
 
         # Objects initialization
         self._objects = {}
+        self._done = False
         self.add_object(objects)
 
         # Init objects data
@@ -34,9 +35,17 @@ class GridEnvironment(SpatialEnvironment):
         pygame.quit()
 
 
+    def finish_episode(self):
+        self._done = True
+
+
     @property
     def data(self):
         return self._data
+
+    @property
+    def done(self):
+        return self._done
 
 
     @property
@@ -209,8 +218,10 @@ class GridEnvironment(SpatialEnvironment):
         # Get all blocking objects
         positions = [y for x in self.objects for y in x.pos_array]
 
-        # Update mesh with blocking positions
-        mesh[tuple(np.array(positions).T)] = 1
+        if len(positions) > 0:
+            
+            # Update mesh with blocking positions
+            mesh[tuple(np.array(positions).T)] = 1
 
         return mesh
 
@@ -289,6 +300,13 @@ class GridEnvironment(SpatialEnvironment):
         # TODO this can be optional for performance
         # Actually it's only required for computations such as pathfinding
         self.set_data()
+
+        # Prepare reward and done
+        # TODO add reward
+        reward = 0
+        done = self.done
+
+        return reward,done
 
 
     #=================================================================================
