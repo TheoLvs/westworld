@@ -185,7 +185,7 @@ class BaseRectangle(BaseObject):
     #=================================================================================
 
 
-    def render(self):
+    def render(self,screen = None):
         """Render function to visualize object in the environment
         Visualize either a circle or square in any color
         Vision range can be visualized as well
@@ -195,18 +195,21 @@ class BaseRectangle(BaseObject):
             - Visualize with Sprites as well in PyGame 
         """
 
+        if screen is None:
+            screen = self.env.screen
+
         if not self.circle:
             # Draw a rectangle on the grid using pygame
-            pygame.draw.rect(self.env.screen,self.color,self.dimensions)
+            pygame.draw.rect(screen,self.color,self.dimensions)
 
         else:
 
             # Draw a circle on the grid using pygame
-            pygame.draw.circle(self.env.screen,self.color,self.center,self.radius)
+            pygame.draw.circle(screen,self.color,self.center,self.radius)
 
 
         if hasattr(self,"vision_range") and self.vision_range is not None:
             if hasattr(self,"show_vision_range"):
                 if self.show_vision_range:
-                    pygame.draw.circle(self.env.screen,WHITE,self.center,int(self.vision_range * self.box_size),1)
+                    pygame.draw.circle(screen,WHITE,self.center,int(self.vision_range * self.box_size),1)
 
