@@ -90,6 +90,20 @@ class BaseRectangle(BaseObject):
     def collider(self):
         return pygame.rect.Rect(self.dimensions)
 
+
+    @property
+    def sprite(self):
+        sprite = pygame.sprite.Sprite()
+        sprite.image = pygame.Surface(self.dimensions[-2:])
+        sprite.image.set_colorkey((0,0,0))
+        sprite.image.fill(self.color)
+        
+        # Prepare mask and rect
+        sprite.rect = self.collider
+        sprite.mask = pygame.mask.from_surface(sprite.image)
+        return sprite
+        
+
     @property
     def box_size(self):
         if hasattr(self,"_box_size"):

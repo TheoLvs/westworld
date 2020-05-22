@@ -9,19 +9,29 @@ import random
 from .spatial import SpatialEnvironment
 from ..algorithms.neighbors import NeighborsFinder
 
-BACKGROUND_COLOR = (0, 0, 0)
-
 
 class GridEnvironment(SpatialEnvironment):
-    def __init__(self,width = 100,height = 60,box_size = 10,objects = None,show_grid = False,grid_color = (50,50,50)):
+    def __init__(self,width = 100,height = 60,box_size = 10,
+        objects = None,show_grid = False,grid_color = (50,50,50),background_color = (0,0,0),
+        layers = None,
+        ):
+
+        # Layers initialization
+        self._layers = []
+
+
+        if layers is not None:
+            self.init_from_layers(layers,box_size)
+        else:
+            self.width = width
+            self.height = height
 
 
         # Grid Environment parameters
-        self.width = width
-        self.height = height
         self.box_size = box_size
         self.show_grid = show_grid
         self.grid_color = grid_color
+        self.background_color = background_color
         self.setup_screen()
 
         # Objects initialization
@@ -31,6 +41,29 @@ class GridEnvironment(SpatialEnvironment):
 
         # Init objects data
         self.set_data()
+
+
+    def init_from_layers(self,layers,box_size):
+
+        # Init grid map from layers
+        if not isinstance(layers,list): layers = [layers]
+        w,h = layers[0].get_size()
+        self.width = w//box_size
+        self.height = h//box_size
+
+        # Prepare sprites group from future collisions
+        self.add_layer(layers)
+        self._set_obstacle_layer_group()
+
+
+
+
+    @property
+    def layers(self):
+        if self._layers is None:
+            return []
+        else:
+            return self._layers
 
 
     def quit(self):
@@ -70,6 +103,16 @@ class GridEnvironment(SpatialEnvironment):
             return self._objects.pop(object_id)
         else:
             return self._objects.pop(object_id.id)
+
+
+    def add_layer(self,layer):
+        if layer is not None:
+            if isinstance(layer,list):
+                for l in layer:
+                    self.add_layer(l)
+            else:
+                layer.set_env(self)
+                self._layers.append(layer)
 
 
     def add_object(self,obj):
@@ -184,6 +227,22 @@ class GridEnvironment(SpatialEnvironment):
         self.set_data()
 
 
+    #=================================================================================
+    # LAYERS
+    #=================================================================================
+
+
+    def _set_obstacle_layer_group(self):
+        group = pygame.sprite.Group()
+        for layer in self.layers:
+            if layer.obstacle:
+                group.add(layer.sprite)
+        self._obstacle_layer_group = group
+
+
+    @property
+    def has_layers(self):
+        return len(self.layers) >= 1
 
 
 
@@ -209,6 +268,13 @@ class GridEnvironment(SpatialEnvironment):
         # Update mesh with blocking positions
         if len(positions) > 0:
             mesh[tuple(np.array(positions).T)] = 1
+
+
+        # Update navigation mesh with obstacles layer if any
+        if self.has_layers:
+            all_meshes = [mesh]
+            all_meshes.extend([layer.get_navigation_mesh() for layer in self.layers])
+            mesh = np.int8(np.sum(all_meshes,axis = 0) > 0)
 
         return mesh
 
@@ -333,10 +399,21 @@ class GridEnvironment(SpatialEnvironment):
         self.reset_screen()
 
 
+    def render_text(self,text,font = "Arial",size = 30,position = (5,5),screen = None,color = (0,0,0)):
+
+        font = pygame.font.SysFont(font, size)
+        text_surface = font.render(f"{text}", False,color)
+
+        if screen is None: screen = self.screen
+        screen.blit(text_surface,position)
+
+
+
+
     def reset_screen(self):
         """Reset PyGame screen by filling with BLACK color
         """
-        self.screen.fill(BACKGROUND_COLOR)
+        self.screen.fill(self.background_color)
 
 
     def render_grid(self,color = (50,50,50)):
@@ -348,13 +425,19 @@ class GridEnvironment(SpatialEnvironment):
 
 
 
-    def render(self):
+    def render(self,screen = None):
         """Render the environment
         TODO: could be without PyGame
         """
 
-        # Reset current screen to black
-        self.reset_screen()
+        if screen is None:
+            # Reset current screen to black
+            self.reset_screen()
+            screen = self.screen
+
+        # Display all layers
+        for layer in self.layers:
+            layer.render(screen)
 
         # Show grid if necessary
         if self.show_grid:
@@ -362,7 +445,7 @@ class GridEnvironment(SpatialEnvironment):
 
         # Render each object
         for el in self.objects:
-            el.render()
+            el.render(screen = screen)
             
 
         # Update the PyGame renderer

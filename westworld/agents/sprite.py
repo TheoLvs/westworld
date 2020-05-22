@@ -9,21 +9,26 @@ References for beginners:
 - Official documentation https://www.pygame.org/docs/ref/sprite.html
 - Video on pixel perfect collision https://www.youtube.com/watch?v=Idu8XfwKUao
 - Pygame Platformer Part 17: Using Collision Masks https://www.youtube.com/watch?v=Dspz3kaTKUg&t=44s
+- https://kidscancode.org/blog/2016/08/pygame_1-2_working-with-sprites/
+- https://fr.wikibooks.org/wiki/Pygame/Introduction_au_module_Sprite
 
 
 - Convert transforms to pygame
 - Convert_alpha transforms and keeps transparency
+- 
 
 
 """
 import pygame
+from pygame.sprite import Sprite
 from .base_object import BaseObject
 
 
 
 
+
 class BaseSprite(BaseObject):
-    def __init__(self,x,y,filepath,width = None,transparency = (0,0,0)):
+    def __init__(self,x = 0,y = 0,filepath = None,width = None,transparency = (0,0,0)):
 
         super().__init__()
 
