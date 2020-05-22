@@ -13,13 +13,15 @@ BACKGROUND_COLOR = (0, 0, 0)
 
 
 class GridEnvironment(SpatialEnvironment):
-    def __init__(self,width = 100,height = 60,box_size = 10,objects = None):
+    def __init__(self,width = 100,height = 60,box_size = 10,objects = None,show_grid = False,grid_color = (50,50,50)):
 
 
         # Grid Environment parameters
         self.width = width
         self.height = height
         self.box_size = box_size
+        self.show_grid = show_grid
+        self.grid_color = grid_color
         self.setup_screen()
 
         # Objects initialization
@@ -219,7 +221,7 @@ class GridEnvironment(SpatialEnvironment):
         positions = [y for x in self.objects for y in x.pos_array]
 
         if len(positions) > 0:
-            
+
             # Update mesh with blocking positions
             mesh[tuple(np.array(positions).T)] = 1
 
@@ -337,6 +339,14 @@ class GridEnvironment(SpatialEnvironment):
         self.screen.fill(BACKGROUND_COLOR)
 
 
+    def render_grid(self,color = (50,50,50)):
+
+        for x in range(self.width):
+            for y in range(self.height):
+                rect = pygame.Rect(x*self.box_size, y*self.box_size,self.box_size, self.box_size)
+                pygame.draw.rect(self.screen, color, rect, 1)
+
+
 
     def render(self):
         """Render the environment
@@ -346,9 +356,14 @@ class GridEnvironment(SpatialEnvironment):
         # Reset current screen to black
         self.reset_screen()
 
+        # Show grid if necessary
+        if self.show_grid:
+            self.render_grid(self.grid_color)
+
         # Render each object
         for el in self.objects:
             el.render()
+            
 
         # Update the PyGame renderer
         pygame.display.update()
