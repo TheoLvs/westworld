@@ -1,5 +1,6 @@
 
 import numpy as np
+import random
 import pygame
 
 from .rectangle import BaseRectangle
@@ -10,13 +11,14 @@ from ...algorithms.neighbors import NeighborsFinder
 class BaseAgent(BaseRectangle):
     def __init__(self,x,y,width = 1,height = 1,color = (255,0,0),circle = False,diagonal = False,
     curiosity = 20,vision_range = None,
+    active_pathfinding = 1.0,
     ):
         super().__init__(x,y,width,height,color,circle)
 
 
         # Movement description
         self.diagonal = diagonal
-        self.pathfinder = AStar()
+        self.pathfinder = AStar(active_pathfinding)
 
         # Other characteristics
         self.set_direction()
@@ -52,6 +54,10 @@ class BaseAgent(BaseRectangle):
             yield angle
 
     def explore(self):
+        pass
+
+
+    def when_blocked(self,collisions):
         pass
 
     def wander(self):
@@ -137,16 +143,23 @@ class BaseAgent(BaseRectangle):
             target_pos = obj.pos_array[0]
         else:
             target_pos = y,x
-        
-        # Prepare mesh
-        mesh = self.env.get_navigation_mesh(self)
 
-        # Find path
-        path = self.pathfinder.run(mesh,start_pos,target_pos,diagonal=self.diagonal,n=n)
-        return path
+        if self.pathfinder.needs_recompute(start_pos,target_pos):
+
+            # Prepare mesh
+            mesh = self.env.get_navigation_mesh(self)
+
+            # Find path
+            path = self.pathfinder.run(mesh,start_pos,target_pos,diagonal=self.diagonal,n=n)
+            return path
+        
+        else:
+            return self.pathfinder.last_path
 
 
     def move_towards(self,x = None,y = None,obj = None,n = None):
+        """Movement function, during one step the agent will move towards a target position or object using pathfinding
+        """
 
         # Find path with pathfinding algorithm
         path = self.find_path_towards(x,y,obj,n)
@@ -160,6 +173,15 @@ class BaseAgent(BaseRectangle):
                 self.move_at(x,y)
             else:
                 pass
+
+
+    def follow_mouse(self,n = None):
+        """Movement function, during one step the agent will follow the mouse position using pathfinding
+        """
+        x,y = pygame.mouse.get_pos()
+        x = x // self.box_size
+        y = y // self.box_size
+        self.move_towards(x = x,y = y,n = n)
 
 
     def move(self,dx = 0,dy = 0,angle = None,dr = None):
@@ -183,16 +205,16 @@ class BaseAgent(BaseRectangle):
         else:
                 
             # Store movements
-            x = self.x + dx
-            y = self.y + dy
+            x = int(self.x + dx)
+            y = int(self.y + dy)
+            
 
             # Correct moves going offscreen
             # TODO use this function only in toroidal environments
             x,y = self.env.correct_offscreen_move(x,y)
 
             # Compute collisions
-            collider = self.get_collider(x,y)
-            is_collision,_ = self.collides_with(self.env.objects,collider = collider)
+            is_collision,collisions = self.collides_with(self.env.objects,x = x,y = y)
 
             if not is_collision:
 
@@ -200,7 +222,8 @@ class BaseAgent(BaseRectangle):
                 self.x = x
                 self.y = y
 
-                    
+            else:
+                self.when_blocked(collisions)
 
 
         return is_collision
@@ -210,9 +233,16 @@ class BaseAgent(BaseRectangle):
 
     def random_walk(self):
 
-        # Sample a random move between -1, 0 or + 1
-        # ie 8 moves around agent's position
-        dx,dy = np.random.randint(0,3,2) - 1
+        if self.diagonal:
+
+            # Sample a random move between -1, 0 or + 1
+            # ie 8 moves around agent's position
+            dx,dy = np.random.randint(0,3,2) - 1
+
+        else:
+            dx,dy = random.choice([(1,0),(-1,0),(0,1),(0,-1)])
+
+
         self.move(dx,dy)
 
 

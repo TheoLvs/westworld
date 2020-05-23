@@ -21,6 +21,7 @@ References for beginners:
 """
 import pygame
 from pygame.sprite import Sprite
+from PIL import Image
 from .base_object import BaseObject
 
 
@@ -28,11 +29,16 @@ from .base_object import BaseObject
 
 
 class BaseSprite(BaseObject):
-    def __init__(self,x = 0,y = 0,filepath = None,width = None,transparency = (0,0,0)):
+    def __init__(self,x = 0,y = 0,filepath = None,width = None,transparency = (0,0,0),init_window = False):
 
         super().__init__()
 
         self.sprite = pygame.sprite.Sprite()
+
+        if init_window:
+            pygame.init()
+            shape = Image.open(filepath).size
+            window = pygame.display.set_mode(shape)
 
         
         # Convert alpha instead of convert with transparent pictures

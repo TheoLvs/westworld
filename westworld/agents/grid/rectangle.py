@@ -102,6 +102,8 @@ class BaseRectangle(BaseObject):
         sprite.rect = self.collider
         sprite.mask = pygame.mask.from_surface(sprite.image)
         return sprite
+
+        
         
 
     @property
@@ -129,6 +131,13 @@ class BaseRectangle(BaseObject):
             self.height * self.box_size
         )
         return pygame.rect.Rect(dimensions)
+
+
+    def get_sprite(self,x,y):
+        sprite = self.sprite
+        sprite.rect = self.get_collider(x,y)
+        return sprite
+
 
 
 
@@ -160,15 +169,20 @@ class BaseRectangle(BaseObject):
         pass
 
 
-    def collides_with(self,others,collider = None):
+    def collides_with(self,others,x = None,y = None):
         """Compute collisions between the object and any other objects
         Returns if there is a collision + the list of object ids in collision
         """
 
         # In the absence of external colliders
         # We take the internal collider
-        if collider is None:
+        if x is None and y is None:
             collider = self.collider
+            sprite = self.sprite
+        else:
+            collider = self.get_collider(x,y)
+            sprite = self.get_sprite(x,y)
+
         
         # If no other colliders
         if len(others) == 0:
@@ -183,6 +197,12 @@ class BaseRectangle(BaseObject):
                 collisions = [ids[i] for i in collisions]
             else:
                 collisions = []
+
+        # Compute collisions with obstacle layer group using pixel perfect collision
+        if self.env.has_layers:
+            layer_collisions = pygame.sprite.spritecollide(sprite,self.env._obstacle_layer_group,False,pygame.sprite.collide_mask)
+            if len(layer_collisions) > 0:
+                collisions.append("obstacle_layer")
 
         # Return signal of collision and colliders touched
         if len(collisions) > 0:
