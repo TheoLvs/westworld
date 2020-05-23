@@ -5,6 +5,7 @@ Closely adapted from the work of :
 """
 
 import numpy as np
+import random
 import heapq
 import warnings
 
@@ -42,18 +43,47 @@ class Node:
 
 class AStar(Pathfinding):
 
-    def __init__(self):
-        pass
+    def __init__(self,proba_recompute = 1.0):
 
 
-    @staticmethod
-    def return_path(current_node):
+        # Probability to recompute the path at each step
+        # 1 represents active pathfinding where we recompute at each step
+        self.proba_recompute = float(proba_recompute)
+        assert 0 <= self.proba_recompute <= 1
+
+        self.last_target = (-1,-1)
+        self.last_path = []
+
+
+    def needs_recompute(self,start_pos,target_pos):
+
+        # If active pathfinding
+        if self.proba_recompute == 1:
+            return True
+
+        # If target is the same, draw a random float to see if we recompute 
+        elif target_pos == self.last_target:
+            return random.random() < self.proba_recompute
+
+        # If target is different we of course needs to recompute
+        else:
+            return True
+
+
+    def return_path(self,current_node):
         path = []
         current = current_node
         while current is not None:
             path.append(current.position)
             current = current.parent
-        return path[::-1]  # Return reversed path
+
+        # Return reversed path
+        path = path[::-1]
+
+        # Store last path found
+        self.last_path = path
+        
+        return path
 
 
     def run(self,mesh,start,end,diagonal = False,n = None):
@@ -75,6 +105,9 @@ class AStar(Pathfinding):
         # Create start and end node
         start_node = Node(None, start)
         end_node = Node(None, end)
+
+        # Store last target
+        self.last_target = end
 
         # Get adjacent moves
         moves = self.get_adjacent_moves(diagonal)
