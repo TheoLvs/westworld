@@ -41,6 +41,7 @@ class GridEnvironment(SpatialEnvironment):
 
         # Init objects data
         self.set_data()
+        self.render()
 
 
     def init_from_layers(self,layers,box_size):
@@ -179,18 +180,18 @@ class GridEnvironment(SpatialEnvironment):
         env_height = self.height
 
         # Check with x
-        if x > env_width:
+        if x >= env_width:
             new_x = 0
         elif x < 0:
-            new_x = env_width
+            new_x = env_width - 1
         else:
             new_x = x
 
         # Check with y
-        if y > env_height:
+        if y >= env_height:
             new_y = 0
         elif y < 0:
-            new_y = env_height
+            new_y = env_height - 1
         else:
             new_y = y
 

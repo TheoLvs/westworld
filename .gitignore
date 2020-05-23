@@ -7,6 +7,7 @@ __pycache__/
 *.so
 
 docs/site/
+examples/dev/captures/
 
 # Distribution / packaging
 .Python
