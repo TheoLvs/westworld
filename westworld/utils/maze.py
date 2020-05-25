@@ -21,7 +21,7 @@ class MazeGenerator:
     def __init__(self,width = 20,height = 20,cell_size = 20):
         
         self.width = width
-        self.height = height 
+        self.height = height
         self.cell_size = cell_size
         self.maze = Maze()
         self.options = ["dungeon","prims"]
@@ -35,6 +35,7 @@ class MazeGenerator:
         mask = mesh_to_mask(self.mesh,self.cell_size)
         # return mask
         img = mask_to_image3d(mask)#.astype(np.int8)
+        img = np.asarray(img,dtype=np.uint8)
         return img
 
 
@@ -42,6 +43,9 @@ class MazeGenerator:
 
         if width is None: width = self.width
         if height is None: width = self.height
+
+        width = width // 2
+        height = height // 2
 
         if method == "dungeon":
             self.maze.generator = DungeonRooms(width,height, rooms=rooms)
@@ -76,10 +80,11 @@ class MazeGenerator:
 
     def save(self,folder = "."):
 
-        filename = "GeneratedMaze_cellsize={self.cell_size}.png"
+        filename = f"GeneratedMaze_cellsize={self.cell_size}.png"
         filepath = os.path.join(folder,filename)
 
         mask = self.make_mask()
 
         Image.fromarray(mask).save(filepath)
+        print(f"... Saved maze in {filepath}")
 

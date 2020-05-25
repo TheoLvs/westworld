@@ -21,7 +21,7 @@ from ipywidgets import interact,FloatSlider,IntSlider
 
 from ..base_object import BaseObject
 from ..sprite import BaseSprite
-from ...utils.image import snap_mask_to_grid,image3d_to_mask,mask_to_image3d,aggregate_mask_to_grid
+from ...utils.image import snap_mask_to_grid,image3d_to_mask,mask_to_image3d,mask_to_mesh
 
 class BaseLayer(BaseSprite):
     def __init__(self,obstacle = True,trigger = False,mask_threshold = 0.1,init_window = True,*args,**kwargs):
@@ -147,7 +147,7 @@ class BaseLayer(BaseSprite):
         """
         shape = (self.env.height,self.env.width)
         if self.obstacle:
-            mesh = aggregate_mask_to_grid(self.mask,self.env.box_size,threshold=self.mask_threshold)
+            mesh = mask_to_mesh(self.mask,self.env.box_size,threshold=self.mask_threshold)
             assert mesh.shape == shape
             return mesh
         else:
