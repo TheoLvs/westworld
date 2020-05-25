@@ -188,7 +188,7 @@ class GridEnvironment(SpatialEnvironment):
             new_x = x
 
         # Check with y
-        if y >= env_height:
+        if y >= env_height: 
             new_y = 0
         elif y < 0:
             new_y = env_height - 1
