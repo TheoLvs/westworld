@@ -11,24 +11,27 @@ from ..algorithms.neighbors import NeighborsFinder
 
 
 class GridEnvironment(SpatialEnvironment):
-    def __init__(self,width = 100,height = 60,box_size = 10,
+    def __init__(self,width = 100,height = 60,cell_size = 10,
         objects = None,show_grid = False,grid_color = (50,50,50),background_color = (0,0,0),
         layers = None,
         ):
 
         # Layers initialization
         self._layers = []
+        self.group_blocking = pygame.sprite.Group()
+        self.group_layers = pygame.sprite.Group()
+        self.group_triggers = pygame.sprite.Group()
 
 
         if layers is not None:
-            self.init_from_layers(layers,box_size)
+            self.init_from_layers(layers,cell_size)
         else:
             self.width = width
             self.height = height
 
 
         # Grid Environment parameters
-        self.box_size = box_size
+        self._cell_size = cell_size
         self.show_grid = show_grid
         self.grid_color = grid_color
         self.background_color = background_color
@@ -44,13 +47,18 @@ class GridEnvironment(SpatialEnvironment):
         self.render()
 
 
-    def init_from_layers(self,layers,box_size):
+    @property
+    def cell_size(self):
+        return self._cell_size
+
+
+    def init_from_layers(self,layers,cell_size):
 
         # Init grid map from layers
         if not isinstance(layers,list): layers = [layers]
         w,h = layers[0].get_size()
-        self.width = w//box_size
-        self.height = h//box_size
+        self.width = w//cell_size
+        self.height = h//cell_size
 
         # Prepare sprites group from future collisions
         self.add_layer(layers)
@@ -65,6 +73,16 @@ class GridEnvironment(SpatialEnvironment):
             return []
         else:
             return self._layers
+
+
+    def has_layers(self):
+        return len(self.group_layers) > 0
+    
+    def has_blocking(self):
+        return len(self.group_blocking) > 0
+
+    def has_triggers(self):
+        return len(self.group_triggers) > 0
 
 
     def quit(self):
@@ -100,13 +118,18 @@ class GridEnvironment(SpatialEnvironment):
         return self.get_object(object_id)
 
     def remove_object(self,object_id):
-        if isinstance(object_id,str):
-            return self._objects.pop(object_id)
-        else:
-            return self._objects.pop(object_id.id)
 
+        if isinstance(object_id,str):
+            obj = self._objects.pop(object_id)
+        else:
+            obj = self._objects.pop(object_id.id)
+
+        self.group_blocking.remove(obj)
+        self.group_triggers.remove(obj)
+        self.group_layers.remove(obj)
 
     def add_layer(self,layer):
+        # TODO maybe pass into add_object
         if layer is not None:
             if isinstance(layer,list):
                 for l in layer:
@@ -131,6 +154,12 @@ class GridEnvironment(SpatialEnvironment):
                 # Set environment as attribute for easy manipulation
                 obj.set_env(self)
                 self._objects[obj.id] = obj
+
+                if obj.blocking:
+                    self.group_blocking.add(obj)
+
+                if obj.trigger:
+                    self.group_triggers.add(obj)
                 
 
 
@@ -199,7 +228,7 @@ class GridEnvironment(SpatialEnvironment):
 
 
     def is_object_colliding(self,obj):
-        is_collision,_ = obj.collides_with(self.objects)
+        is_collision,_ = obj.collides()
         return is_collision
 
 
@@ -241,9 +270,9 @@ class GridEnvironment(SpatialEnvironment):
         self._obstacle_layer_group = group
 
 
-    @property
-    def has_layers(self):
-        return len(self.layers) >= 1
+    # @property
+    # def has_layers(self):
+    #     return len(self.layers) >= 1
 
 
 
@@ -392,8 +421,8 @@ class GridEnvironment(SpatialEnvironment):
 
         # Create window
         self.screen = pygame.display.set_mode((
-            self.width * self.box_size,
-            self.height * self.box_size
+            self.width * self.cell_size,
+            self.height * self.cell_size
             ))
 
         # Fill with black
@@ -421,7 +450,7 @@ class GridEnvironment(SpatialEnvironment):
 
         for x in range(self.width):
             for y in range(self.height):
-                rect = pygame.Rect(x*self.box_size, y*self.box_size,self.box_size, self.box_size)
+                rect = pygame.Rect(x*self.cell_size, y*self.cell_size,self.cell_size, self.cell_size)
                 pygame.draw.rect(self.screen, color, rect, 1)
 
 

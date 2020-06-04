@@ -3,15 +3,17 @@
 import sys
 sys.path.append("../")
 
-from westworld.environment.grid import GridEnvironment
-from westworld.agents.grid import BaseAgent,BaseObstacle,BaseTrigger
-from westworld.simulation.simulation import Simulation
+from westworld.environment import GridEnvironment
+from westworld.agents import BaseGridAgent
+from westworld.objects import BaseObstacle,BaseTrigger,BaseCollectible
+from westworld.simulation import Simulation
 from westworld.colors import *
+
 
 TARGET = (0,0)
 
 
-class Agent(BaseAgent):
+class Agent(BaseGridAgent):
 
     target = TARGET
 

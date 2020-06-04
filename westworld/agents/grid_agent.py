@@ -3,12 +3,12 @@ import numpy as np
 import random
 import pygame
 
-from .rectangle import BaseRectangle
-from ...algorithms.pathfinding.astar import AStar
-from ...algorithms.neighbors import NeighborsFinder
+from ..objects.rectangle import BaseRectangle
+from ..algorithms.pathfinding.astar import AStar
+from ..algorithms.neighbors import NeighborsFinder
 
 
-class BaseAgent(BaseRectangle):
+class BaseGridAgent(BaseRectangle):
     def __init__(self,x,y,width = 1,height = 1,color = (255,0,0),circle = False,diagonal = False,
     curiosity = 20,vision_range = None,
     active_pathfinding = 1.0,
@@ -32,7 +32,7 @@ class BaseAgent(BaseRectangle):
 
 
     def __repr__(self):
-        return f"Agent(x={self.x},y={self.y})"
+        return f"Agent({self.x},{self.y})"
 
 
 
@@ -179,8 +179,8 @@ class BaseAgent(BaseRectangle):
         """Movement function, during one step the agent will follow the mouse position using pathfinding
         """
         x,y = pygame.mouse.get_pos()
-        x = x // self.box_size
-        y = y // self.box_size
+        x = x // self.cell_size
+        y = y // self.cell_size
         self.move_towards(x = x,y = y,n = n)
 
 
@@ -192,39 +192,40 @@ class BaseAgent(BaseRectangle):
         # Move using radial movement (with angle and radius)
         if angle is not None:
 
-            box_size = self.box_size
+            cell_size = self.cell_size
 
             # Compute delta directions with basic trigonometry
             # In a grid environment, movement is rounded to the integer to fit in the grid
-            dx = int(dr * box_size * np.cos(angle))
-            dy = int(dr * box_size * np.sin(angle))
+            dx = int(dr * cell_size * np.cos(angle))
+            dy = int(dr * cell_size * np.sin(angle))
 
             return self.move(dx = dx,dy = dy)
 
         # Move using euclidean movement (with dx and dy)
         else:
+
+            # Store old position
+            old_pos = self.x,self.y
                 
             # Store movements
             x = int(self.x + dx)
             y = int(self.y + dy)
-            
 
             # Correct moves going offscreen
             # TODO use this function only in toroidal environments
             x,y = self.env.correct_offscreen_move(x,y)
 
+            # Store new positions as attributes
+            self.x = x
+            self.y = y
+
             # Compute collisions
-            is_collision,collisions = self.collides_with(self.env.objects,x = x,y = y)
+            is_collision,collisions = self.collides()
+            # is_collision,collisions = self.collides_with(self.env.objects,x = x,y = y)
 
-            if not is_collision:
-
-                # Store new positions as attributes
-                self.x = x
-                self.y = y
-
-            else:
+            if is_collision:
+                self.x,self.y = old_pos
                 self.when_blocked(collisions)
-
 
         return is_collision
 
@@ -252,7 +253,7 @@ class BaseAgent(BaseRectangle):
     #=================================================================================
 
 
-    def find_closest(self,k = 1,condition = None):
+    def find_closest(self,condition = None,k = 1):
 
         # Get objects data we want to search
         objects_data = self.env.find_objects(condition = condition,return_data = True)
@@ -264,7 +265,6 @@ class BaseAgent(BaseRectangle):
             # Create neighbors algorithm
             finder = NeighborsFinder(objects_data)
             distances,ids = finder.find_closest(self,k = k)
-
             return distances,ids
 
 
@@ -279,15 +279,23 @@ class BaseAgent(BaseRectangle):
             search_range = self.vision_range
             assert self.vision_range is not None
 
-        # Find objects data
-        objects_data = self.env.find_objects(condition = condition,return_data = True)
-        objects_data = objects_data.drop(self.id,errors = "ignore")
+        group = pygame.sprite.Group()
+        
+        objs = self.env.find_objects(condition = condition,return_objects = True)
+        group.add(*objs)
 
-        if len(objects_data) == 0:
-            return []
-        else:
-            # Create finder algorithm
-            finder = NeighborsFinder(objects_data)
-            ids = finder.find_in_range(self,search_range)
+        search = self.collides_group(group,method = "circle",radius = search_range)
 
-            return ids
+
+        # # Find objects data
+        # objects_data = self.env.find_objects(condition = condition,return_data = True)
+        # objects_data = objects_data.drop(self.id,errors = "ignore")
+
+        # if len(objects_data) == 0:
+        #     return []
+        # else:
+        #     # Create finder algorithm
+        #     finder = NeighborsFinder(objects_data)
+        #     ids = finder.find_in_range(self,search_range)
+
+        #     return ids

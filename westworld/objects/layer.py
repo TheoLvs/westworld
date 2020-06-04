@@ -30,7 +30,7 @@ class BaseLayer(BaseSprite):
 
         self.mask = self.get_mask()
         self.mask_threshold = mask_threshold
-        self.saved_box_size = 0
+        self.saved_cell_size = 0
 
         self.raw_img = np.copy(self.get_img())
         self.obstacle = obstacle
@@ -40,7 +40,7 @@ class BaseLayer(BaseSprite):
     def save_img(self):
         """Save transformed layer as png for further use
         """
-        name = f"Layer_{str(time.time())[:10]}_boxsize={self.saved_box_size}.png"
+        name = f"Layer_{str(time.time())[:10]}_cellsize={self.saved_cell_size}.png"
         Image.fromarray(self.get_img()).save(name)
         print(f"Saved image as {name}")
 
@@ -58,12 +58,12 @@ class BaseLayer(BaseSprite):
         return image3d_to_mask(img)
 
 
-    def snap_to_grid(self,threshold = None,box_size = None,return_3d = False):
+    def snap_to_grid(self,threshold = None,cell_size = None,return_3d = False):
         """Snap a mask to a given grid, can be used to transform a layer for a grid environment
 
         Args:
             threshold (float, optional): Threshold to consider a mask, 0.1 means a box with 10% of 1 will be a 1 . Defaults to None, which will use the attribute .mask_threshold
-            box_size (int, optional): the size for each cell in the grid. Defaults to None, which will take the environment value env.box_size
+            cell_size (int, optional): the size for each cell in the grid. Defaults to None, which will take the environment value env.cell_size
             return_3d (bool, optional): Returns the array as 3D numpy array or 2D mask. Defaults to False.
 
         Returns:
@@ -71,9 +71,9 @@ class BaseLayer(BaseSprite):
         """
 
         if threshold is None: threshold = self.mask_threshold
-        if box_size is None: box_size = self.env.box_size
+        if cell_size is None: cell_size = self.env.cell_size
 
-        mask = snap_mask_to_grid(self.mask,box_size,threshold)
+        mask = snap_mask_to_grid(self.mask,cell_size,threshold)
         if return_3d:
             return mask_to_image3d(mask)
         else:
@@ -106,29 +106,29 @@ class BaseLayer(BaseSprite):
         But we recommend to save and later use .save_img to save a finalized png version of the layer
 
         Args:
-            save (bool, optional): Save box_size, image, and threshold to attributess. Defaults to True.
+            save (bool, optional): Save cell_size, image, and threshold to attributess. Defaults to True.
         """
 
 
         @interact(
             th = FloatSlider(min = 0,max = 1,value = 0.1,step = 0.1),
-            box_size = IntSlider(min = 10,max = 200,value = 20,step = 10)
+            cell_size = IntSlider(min = 10,max = 200,value = 20,step = 10)
         )
-        def show(th,box_size):
+        def show(th,cell_size):
 
             # Prepare figure
             fig, (ax1,ax2) = plt.subplots(1, 2,figsize = (8,6))
 
             # Snap image mask to grid
-            img = self.snap_to_grid(threshold = th,box_size = box_size,return_3d = True)
+            img = self.snap_to_grid(threshold = th,cell_size = cell_size,return_3d = True)
 
             # Show using matplotlib
             ax1.imshow(self.raw_img)
-            ax2.imshow(self.snap_to_grid(threshold = th,box_size = box_size,return_3d = True))
+            ax2.imshow(self.snap_to_grid(threshold = th,cell_size = cell_size,return_3d = True))
 
             # Add titles and removing ticks
             ax1.set_title("Original image")
-            ax2.set_title(f"Snap to grid\n'threshold={th}' & 'box_size={box_size}'")
+            ax2.set_title(f"Snap to grid\n'threshold={th}' & 'cell_size={cell_size}'")
             ax1.set_xticks([])
             ax2.set_xticks([])
             ax1.set_yticks([])
@@ -138,7 +138,7 @@ class BaseLayer(BaseSprite):
             # Save last params
             if save:
                 self.mask_threshold = th
-                self.saved_box_size = box_size
+                self.saved_cell_size = cell_size
                 self.set_sprite_image(img)
 
 
@@ -147,7 +147,7 @@ class BaseLayer(BaseSprite):
         """
         shape = (self.env.height,self.env.width)
         if self.obstacle:
-            mesh = mask_to_mesh(self.mask,self.env.box_size,threshold=self.mask_threshold)
+            mesh = mask_to_mesh(self.mask,self.env.cell_size,threshold=self.mask_threshold)
             assert mesh.shape == shape
             return mesh
         else:

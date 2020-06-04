@@ -6,15 +6,15 @@ def image3d_to_mask(img,threshold = 0.5):
     return mask
 
 
-def snap_mask_to_grid(mask,box_size,threshold = 0.5):
+def snap_mask_to_grid(mask,cell_size,threshold = 0.5):
 
     new_mask = np.copy(mask)
-    width = mask.shape[0] // box_size
-    height = mask.shape[1] // box_size
+    width = mask.shape[0] // cell_size
+    height = mask.shape[1] // cell_size
 
     for x in range(width):
         for y in range(height):
-            index = np.s_[x*box_size:(x+1)*box_size,y*box_size:(y+1)*box_size]
+            index = np.s_[x*cell_size:(x+1)*cell_size,y*cell_size:(y+1)*cell_size]
             submask = mask[index]
             if submask.mean() > threshold:
                 new_mask[index] = 1
@@ -28,24 +28,24 @@ def mask_to_image3d(mask):
     return np.repeat((1 - mask[:,:,np.newaxis])*255,3,axis = 2)
 
 
-def mesh_to_mask(mesh,box_size):
-    """Transform a numpy array to another numpy array but with each cell repeated box_size times
+def mesh_to_mask(mesh,cell_size):
+    """Transform a numpy array to another numpy array but with each cell repeated cell_size times
     Useful when we have a navigation mesh or a maze where each value in the numpy array represents one cell
-    and we want to convert to image where each value is a pixel, ie each value is repeated box_size pixel times
+    and we want to convert to image where each value is a pixel, ie each value is repeated cell_size pixel times
 
 
     Args:
         mask (np.ndarray): A numpy array with 0 and 1 representing obstacles
-        box_size (int): the size for each square cell in the grid
+        cell_size (int): the size for each square cell in the grid
     """
 
     w,h = mesh.shape
-    new_w,new_h = w * box_size,h*box_size
+    new_w,new_h = w * cell_size,h*cell_size
     mask = np.zeros((new_w,new_h))
 
     for x in range(w):
         for y in range(h):
-            index = np.s_[x*box_size:(x+1)*box_size,y*box_size:(y+1)*box_size]
+            index = np.s_[x*cell_size:(x+1)*cell_size,y*cell_size:(y+1)*cell_size]
             mask[index] = mesh[x,y]
 
     mask = mask.astype(np.int8)
@@ -53,15 +53,15 @@ def mesh_to_mask(mesh,box_size):
 
 
 
-def mask_to_mesh(mask,box_size,threshold = None):
+def mask_to_mesh(mask,cell_size,threshold = None):
 
-    width = mask.shape[0] // box_size
-    height = mask.shape[1] // box_size
+    width = mask.shape[0] // cell_size
+    height = mask.shape[1] // cell_size
     mesh = np.zeros((width,height))
 
     for x in range(width):
         for y in range(height):
-            index = np.s_[x*box_size:(x+1)*box_size,y*box_size:(y+1)*box_size]
+            index = np.s_[x*cell_size:(x+1)*cell_size,y*cell_size:(y+1)*cell_size]
             submask_mean = mask[index].mean()
 
             if threshold is None:

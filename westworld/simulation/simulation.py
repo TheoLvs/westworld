@@ -165,8 +165,8 @@ class Simulation:
     def get_mouse_pos(self):
         # TODO could be in the environment class
         x,y = pygame.mouse.get_pos()
-        x = x // self.env.box_size
-        y = y // self.env.box_size
+        x = x // self.env.cell_size
+        y = y // self.env.cell_size
         return x,y 
 
     def event_is_click(self,event):

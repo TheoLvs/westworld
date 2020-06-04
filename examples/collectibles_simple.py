@@ -6,9 +6,10 @@
 import sys
 sys.path.append("../")
 
-from westworld.environment.grid import GridEnvironment
-from westworld.agents.grid import BaseAgent,BaseObstacle,BaseTrigger,BaseCollectible
-from westworld.simulation.simulation import Simulation
+from westworld.environment import GridEnvironment
+from westworld.agents import BaseGridAgent
+from westworld.objects import BaseObstacle,BaseTrigger,BaseCollectible
+from westworld.simulation import Simulation
 from westworld.colors import *
 
 
@@ -17,7 +18,7 @@ from westworld.colors import *
 # BASE CLASSES
 #==================================================================================================
 
-class Agent(BaseAgent):
+class Agent(BaseGridAgent):
     
     def init(self):
         self.score = 0
@@ -45,10 +46,7 @@ class Agent(BaseAgent):
         
 class Collectible(BaseCollectible):
     
-    collectible = True
-    
-    def on_collision(self,objects):
-        obj = self.env[objects[0]]
+    def on_trigger(self,obj):
         obj.score += 1
         obj.target = None
         

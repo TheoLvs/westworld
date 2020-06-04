@@ -17,20 +17,29 @@ class BaseTrigger(BaseRectangle):
 
     @property
     def stationary(self):
-        return False
+        return True
 
+    @property
+    def trigger(self):
+        return True
 
-    def step(self):
-
-        # Find collisions
-        is_collision,objects = self.collides_with(self.env.objects)
-        
-        # Trigger callback
-        if is_collision:
-            self.on_collision(objects)
-
+    @property
+    def collectible(self):
+        return True
 
 
 
-    def on_collision(self,objects):
-        print(f"Collision with objects {objects}")
+    def on_trigger(self,obj):
+        pass
+
+    def on_trigger_exit(self,obj):
+        pass
+
+
+    def on_collision(self,obj):
+
+        self.on_trigger(obj)
+        self.on_trigger_exit(obj)
+
+    def __repr__(self):
+        return f"Trigger({self.x},{self.y})"
