@@ -3,6 +3,7 @@
 import numpy as np
 import pygame
 import itertools
+from PIL import Image
 
 from .base_object import BaseObject
 from ..colors import *
@@ -11,7 +12,10 @@ from ..colors import *
 
 class BaseRectangle(BaseObject):
 
-    def __init__(self,x,y,width = 1,height = 1,color = (255,0,0),circle = False,radius = None):
+    def __init__(self,x,y,width = 1,height = 1,
+        color = (255,0,0),circle = False,radius = None,
+        img_filepath = None,img_transparency = None,init_window = False,
+        ):
         
         super().__init__()
 
@@ -22,20 +26,51 @@ class BaseRectangle(BaseObject):
         self.color = color
         self.circle = circle
         self._radius = radius
+        self.img_filepath = img_filepath
+
+        if img_transparency is None and img_filepath is not None:
+            self.img_transparency = np.array(Image.open(img_filepath))[0,0]
+        else:
+            self.img_transparency = img_transparency
 
 
-    def _init_sprite_internals(self):
+    def _init_on_env_binding(self):
 
-        # Sprite init
-        self.image = pygame.Surface(self.size)
-        self.image.set_colorkey((0,0,0))
-        self.image.fill(self.color)
+        # Create rectangle
+        if self.img_filepath is None:
+
+            # Sprite init
+            self.image = pygame.Surface(self.size)
+            self.image.set_colorkey((0,0,0))
+            self.image.fill(self.color)
+
+        else:
+            # Convert alpha instead of convert with transparent pictures
+            self.image = pygame.image.load(self.img_filepath).convert() 
+            self.image.set_colorkey(self.img_transparency)
+            self.rescale_img(width = self.width,height = self.height)
+
+
         self.rect = self.get_rect()
         self.mask = pygame.mask.from_surface(self.image)
 
 
     def __repr__(self):
         return f"Rectangle({self.x},{self.y},size=({self.width},{self.height}))"
+
+    def get_size_img(self):
+        return self.image.get_size()
+
+    def rescale_img(self,width,height = None):
+        
+        # Safety check to avoid rescaling layers
+        if not self.layer:
+                
+            w,h = self.get_size_img()
+            new_w = width * self.cell_size
+            new_h = int(h*new_w/w) if height is None else height * self.cell_size
+            self.image = pygame.transform.scale(self.image, (new_w,new_h))
+    
 
 
     @property
@@ -167,12 +202,10 @@ class BaseRectangle(BaseObject):
             raise Exception("Object must be added to an environment first to setup box size")
 
 
-    def set_env(self,env):
+    def bind(self,env):
         self._env = env
-
-        if hasattr(env,"cell_size"):
-            self._cell_size = env.cell_size
-            self._init_sprite_internals()
+        self._cell_size = env.cell_size
+        self._init_on_env_binding()
 
 
 
@@ -271,19 +304,26 @@ class BaseRectangle(BaseObject):
         if screen is None:
             screen = self.env.screen
 
-        if not self.circle:
-            # Draw a rectangle on the grid using pygame
-            self.render_rect(screen = screen,color=self.color)
-            # pygame.draw.rect(screen,self.color,self.dimensions)
 
+        if self.img_filepath is None:
+
+            if not self.circle:
+                # Draw a rectangle on the grid using pygame
+                self.render_rect(screen = screen,color=self.color)
+                # pygame.draw.rect(screen,self.color,self.dimensions)
+
+            else:
+                self.render_circle(screen = screen,color=self.color)
+                # Draw a circle on the grid using pygame
+                # pygame.draw.circle(screen,self.color,self.center,self.radius)
+    
         else:
-            self.render_circle(screen = screen,color=self.color)
-            # Draw a circle on the grid using pygame
-            # pygame.draw.circle(screen,self.color,self.center,self.radius)
+
+            self.render_img(screen = screen)
 
 
-        # if hasattr(self,"vision_range") and self.vision_range is not None:
-        #     if hasattr(self,"show_vision_range"):
-        #         if self.show_vision_range:
-        #             pygame.draw.circle(screen,WHITE,self.center,int(self.vision_range * self.cell_size),1)
+            # if hasattr(self,"vision_range") and self.vision_range is not None:
+            #     if hasattr(self,"show_vision_range"):
+            #         if self.show_vision_range:
+            #             pygame.draw.circle(screen,WHITE,self.center,int(self.vision_range * self.cell_size),1)
 

@@ -19,22 +19,43 @@ import matplotlib.pyplot as plt
 from ipywidgets import interact,FloatSlider,IntSlider
 
 
-from ..base_object import BaseObject
-from ..sprite import BaseSprite
-from ...utils.image import snap_mask_to_grid,image3d_to_mask,mask_to_image3d,mask_to_mesh
+from .rectangle import BaseRectangle
+from ..utils.image import snap_mask_to_grid,image3d_to_mask,mask_to_image3d,mask_to_mesh
+from ..exceptions import EnvironmentBindingError
 
-class BaseLayer(BaseSprite):
-    def __init__(self,obstacle = True,trigger = False,mask_threshold = 0.1,init_window = True,*args,**kwargs):
 
-        super().__init__(x = 0,y = 0,init_window = init_window,*args,**kwargs)
+class BaseLayer(BaseRectangle):
+    def __init__(self,img_filepath,img_transparency = (255,255,255),obstacle = True,trigger = False,mask_threshold = 0.1,init_window = True,**kwargs):
 
-        self.mask = self.get_mask()
+        super().__init__(x = 0,y = 0,img_filepath = img_filepath,img_transparency = img_transparency,**kwargs)
+
+        self._obstacle = obstacle
+        self._trigger = trigger
+        self._raw_img = Image.open(self.img_filepath)
         self.mask_threshold = mask_threshold
         self.saved_cell_size = 0
-
+    
+    def _init_on_env_binding(self):
+        super()._init_on_env_binding()
+        self.mask_array = self.get_mask()
         self.raw_img = np.copy(self.get_img())
-        self.obstacle = obstacle
-        self.trigger = trigger
+
+    def get_size(self):
+        return self._raw_img.size
+
+
+    @property
+    def layer(self):
+        return True
+
+
+    @property
+    def obstacle(self):
+        return self._obstacle
+    
+    @property
+    def trigger(self):
+        return self._trigger
 
 
     def save_img(self):
@@ -49,7 +70,10 @@ class BaseLayer(BaseSprite):
         """Get numpy array image from pygame surface
         Axes are swapped between numpy and pygame
         """
-        return pygame.surfarray.array3d(self.sprite.image).swapaxes(0,1)
+        if not hasattr(self,"image"):
+            raise EnvironmentBindingError("You need to bind the layer to an environment first, because self.image is not initialized")
+        else:
+            return pygame.surfarray.array3d(self.image).swapaxes(0,1)
 
     def get_mask(self):
         """Get mask from image, ie a 2D array with 0 for transparent and 1 for object
@@ -73,7 +97,7 @@ class BaseLayer(BaseSprite):
         if threshold is None: threshold = self.mask_threshold
         if cell_size is None: cell_size = self.env.cell_size
 
-        mask = snap_mask_to_grid(self.mask,cell_size,threshold)
+        mask = snap_mask_to_grid(self.mask_array,cell_size,threshold)
         if return_3d:
             return mask_to_image3d(mask)
         else:
@@ -86,7 +110,7 @@ class BaseLayer(BaseSprite):
         """
 
         surface = pygame.surfarray.make_surface(img.swapaxes(0,1))
-        self.sprite.image = surface
+        self.image = surface
 
 
     def show(self):
@@ -147,7 +171,7 @@ class BaseLayer(BaseSprite):
         """
         shape = (self.env.height,self.env.width)
         if self.obstacle:
-            mesh = mask_to_mesh(self.mask,self.env.cell_size,threshold=self.mask_threshold)
+            mesh = mask_to_mesh(self.mask_array,self.env.cell_size,threshold=self.mask_threshold)
             assert mesh.shape == shape
             return mesh
         else:

@@ -13,34 +13,32 @@ from ..algorithms.neighbors import NeighborsFinder
 class GridEnvironment(SpatialEnvironment):
     def __init__(self,width = 100,height = 60,cell_size = 10,
         objects = None,show_grid = False,grid_color = (50,50,50),background_color = (0,0,0),
-        layers = None,
         ):
 
-        # Layers initialization
-        self._layers = []
+        # Init pygame
+        pygame.init()
+        self.screen = pygame.display.set_mode((1,1))
+        
+        # Store parameters
+        self._cell_size = cell_size
+        self._done = False
+        self.show_grid = show_grid
+        self.grid_color = grid_color
+        self.width = width
+        self.height = height
+        self.background_color = background_color
+
+        # Groups initialization
         self.group_blocking = pygame.sprite.Group()
         self.group_layers = pygame.sprite.Group()
         self.group_triggers = pygame.sprite.Group()
 
-
-        if layers is not None:
-            self.init_from_layers(layers,cell_size)
-        else:
-            self.width = width
-            self.height = height
-
-
-        # Grid Environment parameters
-        self._cell_size = cell_size
-        self.show_grid = show_grid
-        self.grid_color = grid_color
-        self.background_color = background_color
-        self.setup_screen()
-
         # Objects initialization
         self._objects = {}
-        self._done = False
         self.add_object(objects)
+
+        # Grid Environment parameters
+        self.setup_screen()
 
         # Init objects data
         self.set_data()
@@ -51,29 +49,14 @@ class GridEnvironment(SpatialEnvironment):
     def cell_size(self):
         return self._cell_size
 
-
-    def init_from_layers(self,layers,cell_size):
-
-        # Init grid map from layers
-        if not isinstance(layers,list): layers = [layers]
-        w,h = layers[0].get_size()
-        self.width = w//cell_size
-        self.height = h//cell_size
-
-        # Prepare sprites group from future collisions
-        self.add_layer(layers)
-        self._set_obstacle_layer_group()
-
+    def init_screen(self):
+        pass
 
 
 
     @property
     def layers(self):
-        if self._layers is None:
-            return []
-        else:
-            return self._layers
-
+        return self.group_layers.sprites()
 
     def has_layers(self):
         return len(self.group_layers) > 0
@@ -128,15 +111,6 @@ class GridEnvironment(SpatialEnvironment):
         self.group_triggers.remove(obj)
         self.group_layers.remove(obj)
 
-    def add_layer(self,layer):
-        # TODO maybe pass into add_object
-        if layer is not None:
-            if isinstance(layer,list):
-                for l in layer:
-                    self.add_layer(l)
-            else:
-                layer.set_env(self)
-                self._layers.append(layer)
 
 
     def add_object(self,obj):
@@ -152,8 +126,11 @@ class GridEnvironment(SpatialEnvironment):
             else:
                 
                 # Set environment as attribute for easy manipulation
-                obj.set_env(self)
+                obj.bind(self)
                 self._objects[obj.id] = obj
+
+                if obj.layer:
+                    self.group_layers.add(obj)
 
                 if obj.blocking:
                     self.group_blocking.add(obj)
@@ -411,9 +388,27 @@ class GridEnvironment(SpatialEnvironment):
     # RENDERERS
     #=================================================================================
 
+
+
+
+    def _init_screen_from_layer(self):
+
+        # Init grid map from layers
+        layer = self.layers[0]
+        w,h = layer.get_size()
+        self.width = w//self.cell_size
+        self.height = h//self.cell_size
+
+
+
+
     def setup_screen(self):
         """Setup the first PyGame Screen
         """
+
+        if self.has_layers():
+            self._init_screen_from_layer()
+        
 
         # Init pygame window
         pygame.init()
@@ -465,10 +460,6 @@ class GridEnvironment(SpatialEnvironment):
             self.reset_screen()
             screen = self.screen
 
-        # Display all layers
-        for layer in self.layers:
-            layer.render(screen)
-
         # Show grid if necessary
         if self.show_grid:
             self.render_grid(self.grid_color)
@@ -476,7 +467,6 @@ class GridEnvironment(SpatialEnvironment):
         # Render each object
         for el in self.objects:
             el.render(screen = screen)
-            
 
         # Update the PyGame renderer
         pygame.display.update()

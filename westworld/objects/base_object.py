@@ -44,7 +44,7 @@ class BaseObject(Sprite):
             raise Exception("The object must be attached to an environment")
 
 
-    def set_env(self,env):
+    def bind(self,env):
         """Default setter function
         """
         self._env = env
@@ -77,6 +77,11 @@ class BaseObject(Sprite):
     @property
     def radius(self):
         return 1
+
+
+    @property
+    def layer(self):
+        return False
 
 
     @property
@@ -191,3 +196,16 @@ class BaseObject(Sprite):
 
         # Draw rectangle using pygame
         pygame.draw.rect(screen,color,dimensions,thickness)
+
+
+    def render_img(self,image = None,x = None,y = None,screen = None,cell_size = None):
+
+        if x is None: x = self.x 
+        if y is None: y = self.y
+        if cell_size is None: cell_size = self.env.cell_size
+        if image is None: image = self.image
+        if screen is None: screen = self.env.screen
+
+        pos = (x * cell_size,y * cell_size)
+
+        screen.blit(image,pos)

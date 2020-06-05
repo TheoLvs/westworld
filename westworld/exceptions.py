@@ -1,0 +1,6 @@
+
+
+
+
+class EnvironmentBindingError(Exception):
+    pass

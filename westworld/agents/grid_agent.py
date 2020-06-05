@@ -12,8 +12,9 @@ class BaseGridAgent(BaseRectangle):
     def __init__(self,x,y,width = 1,height = 1,color = (255,0,0),circle = False,diagonal = False,
     curiosity = 20,vision_range = None,
     active_pathfinding = 1.0,
+    **kwargs,
     ):
-        super().__init__(x,y,width,height,color,circle)
+        super().__init__(x,y,width,height,color,circle,**kwargs)
 
 
         # Movement description
