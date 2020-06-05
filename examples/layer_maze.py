@@ -38,11 +38,11 @@ class RandomAgent(BaseGridAgent):
 #==================================================================================================
 
 # Prepare layer
-layer = BaseLayer(img_filepath = "examples/layers/GeneratedMaze_cellsize=20.png",img_transparency = (255,255,255))
+layer = BaseLayer(img_filepath = "examples/assets/layers/GeneratedMaze_cellsize=20.png",img_transparency = (255,255,255))
 
 # Prepare agents
 agents = [
-    Agent(1,1,color = RED),
+    Agent(1,1,color = RED,img_asset = "blob"),
     WanderAgent(1,19,color = BLUE,curiosity = 20),
     RandomAgent(19,19,color = GREEN),
 ]
@@ -59,4 +59,4 @@ env = GridEnvironment(
 sim = Simulation(env,fps = 15,name = "LayerPathfindingMouse")
 
 if __name__ == "__main__":
-    sim.run_episode(n_steps = 200,save = False)
+    sim.run_episode(n_steps = 500,save = False)

@@ -38,7 +38,7 @@ class RandomAgent(BaseGridAgent):
 #==================================================================================================
 
 # Prepare layer
-layer = BaseLayer(img_filepath = "examples/layers/Layer_1590257407_boxsize=20.png",img_transparency = (255,255,255))
+layer = BaseLayer(img_filepath = "examples/assets/layers/Layer_1590257407_boxsize=20.png",img_transparency = (255,255,255))
 
 # Prepare agents
 agents = [

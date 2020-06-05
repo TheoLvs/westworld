@@ -362,6 +362,8 @@ class GridEnvironment(SpatialEnvironment):
     # ENV LIFECYCLE
     #=================================================================================
 
+    def callback_step(self):
+        pass
 
     def step(self):
 
@@ -377,6 +379,9 @@ class GridEnvironment(SpatialEnvironment):
         # TODO this can be optional for performance
         # Actually it's only required for computations such as pathfinding
         self.set_data()
+
+        # Step callback
+        self.callback_step()
 
         # Prepare reward and done
         # TODO add reward

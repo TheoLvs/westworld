@@ -161,9 +161,12 @@ class BaseGridAgent(BaseRectangle):
     def move_towards(self,x = None,y = None,obj = None,n = None):
         """Movement function, during one step the agent will move towards a target position or object using pathfinding
         """
-
-        if self.pos == obj.pos:
-            return True
+        if obj is None:
+            if self.pos == (x,y):
+                return True
+        else:
+            if self.pos == obj.pos:
+                return True
 
         # Find path with pathfinding algorithm
         path = self.find_path_towards(x,y,obj,n)
