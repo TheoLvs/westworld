@@ -7,6 +7,7 @@ from PIL import Image
 
 from .base_object import BaseObject
 from ..colors import *
+from ..assets import make_blob,make_ball
 
 
 
@@ -14,7 +15,8 @@ class BaseRectangle(BaseObject):
 
     def __init__(self,x,y,width = 1,height = 1,
         color = (255,0,0),circle = False,radius = None,
-        img_filepath = None,img_transparency = None,init_window = False,
+        img_filepath = None,img_transparency = (200, 191, 231),
+        img_asset = None,
         ):
         
         super().__init__()
@@ -27,6 +29,7 @@ class BaseRectangle(BaseObject):
         self.circle = circle
         self._radius = radius
         self.img_filepath = img_filepath
+        self.img_asset = img_asset
 
         if img_transparency is None and img_filepath is not None:
             self.img_transparency = np.array(Image.open(img_filepath))[0,0]
@@ -37,18 +40,35 @@ class BaseRectangle(BaseObject):
     def _init_on_env_binding(self):
 
         # Create rectangle
-        if self.img_filepath is None:
+        if self.img_filepath is not None:
 
+            # Convert alpha instead of convert with transparent pictures
+            self.image = pygame.image.load(self.img_filepath).convert()
+            self.image.set_colorkey(self.img_transparency)
+            self.rescale_img(width = self.width,height = self.height)
+
+        elif self.img_asset is not None:
+            assert self.img_asset in ["blob","ball"]
+
+            if self.img_asset == "blob":
+                img = make_blob(self.color,self.img_transparency)
+            elif self.img_asset == "ball":
+                lighter_fn = lambda x,t : min([255,int((1+t)*x)]) 
+                color1 = self.color
+                color2 = tuple([lighter_fn(x,0.6) for x in color1])
+                img = make_ball(color1,color2,self.img_transparency)
+
+            # Convert alpha instead of convert with transparent pictures
+            self.image = pygame.surfarray.make_surface(img)
+            self.image.set_colorkey(self.img_transparency)
+            self.rescale_img(width = self.width,height = self.height)
+
+        else:
             # Sprite init
             self.image = pygame.Surface(self.size)
             self.image.set_colorkey((0,0,0))
             self.image.fill(self.color)
 
-        else:
-            # Convert alpha instead of convert with transparent pictures
-            self.image = pygame.image.load(self.img_filepath).convert() 
-            self.image.set_colorkey(self.img_transparency)
-            self.rescale_img(width = self.width,height = self.height)
 
 
         self.rect = self.get_rect()
@@ -305,7 +325,7 @@ class BaseRectangle(BaseObject):
             screen = self.env.screen
 
 
-        if self.img_filepath is None:
+        if self.img_filepath is None and self.img_asset is None:
 
             if not self.circle:
                 # Draw a rectangle on the grid using pygame
