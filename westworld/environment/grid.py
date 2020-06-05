@@ -1,9 +1,11 @@
 
 import numpy as np
 import pandas as pd
-from PIL import Image
 import pygame
 import random
+from PIL import Image
+from win32api import GetSystemMetrics
+
 
 # Custom libraries
 from .spatial import SpatialEnvironment
@@ -11,21 +13,21 @@ from ..algorithms.neighbors import NeighborsFinder
 
 
 class GridEnvironment(SpatialEnvironment):
-    def __init__(self,width = 100,height = 60,cell_size = 10,
+    def __init__(self,width = None,height = None,cell_size = 10,
         objects = None,show_grid = False,grid_color = (50,50,50),background_color = (0,0,0),
         ):
 
         # Init pygame
         pygame.init()
-        self.screen = pygame.display.set_mode((1,1))
-        
+        self.screen = pygame.display.set_mode((1,1),0,0)
+
         # Store parameters
         self._cell_size = cell_size
         self._done = False
         self.show_grid = show_grid
         self.grid_color = grid_color
-        self.width = width
-        self.height = height
+        self.width = width if width is not None else (GetSystemMetrics(0) // cell_size) - 3
+        self.height = height if height is not None else (GetSystemMetrics(1) // cell_size) - 3
         self.background_color = background_color
 
         # Groups initialization
@@ -418,7 +420,7 @@ class GridEnvironment(SpatialEnvironment):
         self.screen = pygame.display.set_mode((
             self.width * self.cell_size,
             self.height * self.cell_size
-            ))
+            ),pygame.RESIZABLE)
 
         # Fill with black
         self.reset_screen()
