@@ -129,6 +129,10 @@ class BaseObject(Sprite):
 
         # Circle collider
         elif method == "circle":
+            # Warning, to check ratio works with rect but for circle 
+            # We need to add the cell_size, maybe works as a radius and not a ratio
+            ratio = ratio * self.env.cell_size
+
             if ratio is  None:
                 collisions = pygame.sprite.spritecollide(self,group,False,pygame.sprite.collide_circle)
             else:
@@ -169,7 +173,7 @@ class BaseObject(Sprite):
         pass
 
 
-    def render_rect(self,x = None,y = None,width = None,height = None,ratio = None,color = None,center = False,screen = None,cell_size = None,thickness = 0):
+    def render_rect(self,x = None,y = None,width = None,height = None,radius = None,color = None,center = False,screen = None,cell_size = None,thickness = 0):
 
         # Default arguments
         if x is None: x = self.x
@@ -179,9 +183,9 @@ class BaseObject(Sprite):
         if cell_size is None: cell_size = self.env.cell_size
         if width is None: width = self.width
         if height is None: height = self.height
-        if ratio is not None:
-            width = ratio
-            height = ratio
+        if radius is not None:
+            width = radius * 2
+            height = radius * 2
 
         # Center the square on x,y or not
         if not center:

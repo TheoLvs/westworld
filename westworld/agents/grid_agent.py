@@ -10,7 +10,7 @@ from ..algorithms.neighbors import NeighborsFinder
 
 class BaseGridAgent(BaseRectangle):
     def __init__(self,x,y,width = 1,height = 1,color = (255,0,0),circle = False,diagonal = False,
-    curiosity = 20,vision_range = None,
+    curiosity = 20,search_radius = 2,
     active_pathfinding = 1.0,
     **kwargs,
     ):
@@ -24,7 +24,7 @@ class BaseGridAgent(BaseRectangle):
         # Other characteristics
         self.set_direction()
         self.curiosity = curiosity
-        self.vision_range = vision_range
+        self.search_radius = search_radius
  
 
     @property
@@ -162,6 +162,9 @@ class BaseGridAgent(BaseRectangle):
         """Movement function, during one step the agent will move towards a target position or object using pathfinding
         """
 
+        if self.pos == obj.pos:
+            return True
+
         # Find path with pathfinding algorithm
         path = self.find_path_towards(x,y,obj,n)
 
@@ -172,8 +175,9 @@ class BaseGridAgent(BaseRectangle):
             if len(path) > 1:
                 y,x = path[1]
                 self.move_at(x,y)
+                return False
             else:
-                pass
+                return False
 
 
     def follow_mouse(self,n = None):
@@ -269,23 +273,26 @@ class BaseGridAgent(BaseRectangle):
             return distances,ids
 
 
+    def find(self,condition = None,return_objects = True,**kwargs):
+        return self.env.find_objects(condition = condition,return_objects = return_objects,**kwargs)
 
 
-    def find_in_range(self,search_range = None,condition = None):
+    def find_in_range(self,condition = None,search_radius = None,method = "circle"):
         # TODO add parameters to only find objects that matters
         # For example not using obstacles
         # Easily done by appending to condition to add obstacles = False
 
-        if search_range is None:
-            search_range = self.vision_range
-            assert self.vision_range is not None
+        if search_radius is None:
+            search_radius = self.search_radius
+            assert self.search_radius is not None
 
         group = pygame.sprite.Group()
         
         objs = self.env.find_objects(condition = condition,return_objects = True)
         group.add(*objs)
 
-        search = self.collides_group(group,method = "circle",radius = search_range)
+        search = self.collides_group(group,method = method,ratio = search_radius)
+        return search[1]
 
 
         # # Find objects data

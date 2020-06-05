@@ -322,8 +322,9 @@ class BaseRectangle(BaseObject):
             self.render_img(screen = screen)
 
 
-            # if hasattr(self,"vision_range") and self.vision_range is not None:
-            #     if hasattr(self,"show_vision_range"):
-            #         if self.show_vision_range:
-            #             pygame.draw.circle(screen,WHITE,self.center,int(self.vision_range * self.cell_size),1)
+        if hasattr(self,"show_search_radius") and self.show_search_radius:
+            if hasattr(self,"search_radius_method") and self.search_radius_method == "rect":
+                self.render_rect(screen = screen,color = WHITE,radius = self.search_radius,thickness = 1,center = True)
+            else:
+                self.render_circle(screen = screen,color = WHITE,radius = self.search_radius,thickness = 1)
 
