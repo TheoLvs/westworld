@@ -37,7 +37,11 @@ class BaseRectangle(BaseObject):
             self.img_transparency = img_transparency
 
 
-    def _init_on_env_binding(self):
+    def init_internals(self,errors_binding = True):
+
+        if not errors_binding:
+            if not self.is_bound():
+                return None
 
         # Create rectangle
         if self.img_filepath is not None:
@@ -225,7 +229,7 @@ class BaseRectangle(BaseObject):
     def bind(self,env):
         self._env = env
         self._cell_size = env.cell_size
-        self._init_on_env_binding()
+        self.init_internals()
 
 
 

@@ -1,6 +1,4 @@
 
 
-
-
-class EnvironmentBindingError(Exception):
+class ObjectNotBoundError(Exception):
     pass

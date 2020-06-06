@@ -4,6 +4,8 @@ import uuid
 import pygame
 from pygame.sprite import Sprite
 
+from ..exceptions import ObjectNotBoundError
+
 
 
 class BaseObject(Sprite):
@@ -34,14 +36,22 @@ class BaseObject(Sprite):
         self._clock += 1
 
 
+    def kill(self):
+        self.env.remove_object(self)
+
+
     @property
     def env(self):
         """Environment linked to the object
         """
-        if hasattr(self,"_env"):
+        if self.is_bound():
             return self._env
         else:
-            raise Exception("The object must be attached to an environment")
+            raise ObjectNotBoundError("The object must be attached to an environment")
+
+
+    def is_bound(self):
+        return hasattr(self,"_env")
 
 
     def bind(self,env):

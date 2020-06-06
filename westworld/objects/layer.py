@@ -21,7 +21,7 @@ from ipywidgets import interact,FloatSlider,IntSlider
 
 from .rectangle import BaseRectangle
 from ..utils.image import snap_mask_to_grid,image3d_to_mask,mask_to_image3d,mask_to_mesh
-from ..exceptions import EnvironmentBindingError
+from ..exceptions import ObjectNotBoundError
 
 
 class BaseLayer(BaseRectangle):
@@ -35,8 +35,8 @@ class BaseLayer(BaseRectangle):
         self.mask_threshold = mask_threshold
         self.saved_cell_size = 0
     
-    def _init_on_env_binding(self):
-        super()._init_on_env_binding()
+    def init_internals(self):
+        super().init_internals()
         self.mask_array = self.get_mask()
         self.raw_img = np.copy(self.get_img())
 
@@ -71,7 +71,7 @@ class BaseLayer(BaseRectangle):
         Axes are swapped between numpy and pygame
         """
         if not hasattr(self,"image"):
-            raise EnvironmentBindingError("You need to bind the layer to an environment first, because self.image is not initialized")
+            raise ObjectNotBoundError("You need to bind the layer to an environment first, because self.image is not initialized")
         else:
             return pygame.surfarray.array3d(self.image).swapaxes(0,1)
 

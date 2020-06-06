@@ -158,7 +158,7 @@ class BaseGridAgent(BaseRectangle):
             return self.pathfinder.last_path
 
 
-    def move_towards(self,x = None,y = None,obj = None,n = None):
+    def move_towards(self,x = None,y = None,obj = None,n = None,naive = False):
         """Movement function, during one step the agent will move towards a target position or object using pathfinding
         """
         if obj is None:
@@ -168,19 +168,36 @@ class BaseGridAgent(BaseRectangle):
             if self.pos == obj.pos:
                 return True
 
-        # Find path with pathfinding algorithm
-        path = self.find_path_towards(x,y,obj,n)
 
-        # Move to next position in the path
-        # First element is the current position
-        # Warning coordinates are reversed in numpy arrays
-        if path is not None:
-            if len(path) > 1:
-                y,x = path[1]
-                self.move_at(x,y)
-                return False
-            else:
-                return False
+        if naive:
+            MOVES = []
+            if self.x > x:
+                MOVES.append((-1,0))
+            elif self.x < x:
+                MOVES.append((1,0))
+            if self.y > y:
+                MOVES.append((0,-1))
+            elif self.y < y:
+                MOVES.append((0,1))
+
+            dx,dy = random.choice(MOVES)
+            self.move(dx,dy)
+
+        else:
+
+            # Find path with pathfinding algorithm
+            path = self.find_path_towards(x,y,obj,n)
+
+            # Move to next position in the path
+            # First element is the current position
+            # Warning coordinates are reversed in numpy arrays
+            if path is not None:
+                if len(path) > 1:
+                    y,x = path[1]
+                    self.move_at(x,y)
+                    return False
+                else:
+                    return False
 
 
     def follow_mouse(self,n = None):

@@ -135,6 +135,14 @@ class Logger:
             return pio.show(data)
 
 
+    def make_chart(self,cols,title,kind = "line",return_dict = False,return_visdom = False):
+
+        if kind == "line":
+            return self.make_line_chart(cols,title,return_dict,return_visdom)
+        else:
+            raise Exception("Not Implemented Error")
+
+
     def send_visdom_data(self,data):
         self.visdom_server._send(data)
 
@@ -145,6 +153,10 @@ class Logger:
         if self.graphs is None:
             for name in self.data:
                 self.make_line_chart(name,return_visdom = True)
+
+        else:
+            for title,graph in self.graphs.items():
+                self.make_chart(graph["cols"],title,graph["kind"],return_visdom = True)
 
 
 

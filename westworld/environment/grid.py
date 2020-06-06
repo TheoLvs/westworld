@@ -15,6 +15,7 @@ from ..algorithms.neighbors import NeighborsFinder
 class GridEnvironment(SpatialEnvironment):
     def __init__(self,width = None,height = None,cell_size = 10,
         objects = None,show_grid = False,grid_color = (50,50,50),background_color = (0,0,0),
+        callbacks_step = None,
         ):
 
         # Init pygame
@@ -26,9 +27,10 @@ class GridEnvironment(SpatialEnvironment):
         self._done = False
         self.show_grid = show_grid
         self.grid_color = grid_color
-        self.width = width if width is not None else (GetSystemMetrics(0) // cell_size) - 3
-        self.height = height if height is not None else (GetSystemMetrics(1) // cell_size) - 3
+        self.width = width if width is not None else ((GetSystemMetrics(0) - 100) // cell_size)
+        self.height = height if height is not None else ((GetSystemMetrics(1) - 100) // cell_size)
         self.background_color = background_color
+        self.callbacks_step = [] if callbacks_step is None else callbacks_step
 
         # Groups initialization
         self.group_blocking = pygame.sprite.Group()
@@ -381,7 +383,8 @@ class GridEnvironment(SpatialEnvironment):
         self.set_data()
 
         # Step callback
-        self.callback_step()
+        for fn in self.callbacks_step:
+            fn(self)
 
         # Prepare reward and done
         # TODO add reward
