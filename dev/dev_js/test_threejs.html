@@ -24,7 +24,9 @@
             var cube = new THREE.Mesh( geometry, material );
             scene.add( cube );
 
-            camera.position.z = 5;
+            camera.position.z = 20;
+            camera.position.x = 5;
+            camera.position.y = 6
 
             var animate = function () {
                 requestAnimationFrame( animate );
@@ -36,7 +38,10 @@
             };
 
             animate();
-            
+
+            var grid = new THREE.GridHelper(100, 10);
+            scene.add(grid);
+
             // Our Javascript will go here.
         </script>
     </body>

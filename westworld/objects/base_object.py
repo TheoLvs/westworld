@@ -67,6 +67,9 @@ class BaseObject(Sprite):
         pass
 
 
+    @property
+    def on_grid(self):
+        return self.env.is_grid
 
     @property
     def stationary(self):

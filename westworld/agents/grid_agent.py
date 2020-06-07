@@ -10,7 +10,7 @@ from ..algorithms.neighbors import NeighborsFinder
 
 class BaseGridAgent(BaseRectangle):
     def __init__(self,x,y,width = 1,height = 1,color = (255,0,0),circle = False,diagonal = False,
-    curiosity = 20,search_radius = 2,
+    curiosity = 20,search_radius = 2,speed = 5,
     active_pathfinding = 1.0,
     **kwargs,
     ):
@@ -18,6 +18,7 @@ class BaseGridAgent(BaseRectangle):
 
 
         # Movement description
+        self.speed = speed
         self.diagonal = diagonal
         self.pathfinder = AStar(active_pathfinding)
 
@@ -41,18 +42,16 @@ class BaseGridAgent(BaseRectangle):
     # MOVEMENTS
     #=================================================================================
 
-    def set_direction(self):
-        self.direction_angle = np.random.uniform(0,2*np.pi)
 
 
-    def _angle_generator(self):
-        # Not sure it's the right way to do, control is not easy with generators
-        i = 0
-        while True:
-            if i % self.curiosity == 0:
-                angle = np.random.uniform(0,2*np.pi)
-            i += 1
-            yield angle
+    def set_direction(self,angle = None):
+        if angle is None: angle = np.random.uniform(0,360)
+        self.direction_angle = angle
+
+
+    def turn(self,angle):
+        self.direction_angle += angle
+
 
     def explore(self):
         pass
@@ -63,9 +62,13 @@ class BaseGridAgent(BaseRectangle):
 
     def wander(self):
 
-        # Move using an unit movement (adjacent squares only) but more or less in the direction given by the angle
-        dx,dy = self._sample_unit_movement_from_angle(self.direction_angle)
-        self.move(dx = dx,dy = dy)
+        if self.on_grid:
+            # Move using an unit movement (adjacent squares only) but more or less in the direction given by the angle
+            dx,dy = self._sample_unit_movement_from_angle(self.direction_angle)
+            self.move(dx = dx,dy = dy)
+
+        else:
+            self.move(speed = self.speed)
 
         # Change direction based on curiosity value
         if self.clock > 1 and self.clock % self.curiosity == 0:
@@ -209,20 +212,28 @@ class BaseGridAgent(BaseRectangle):
         self.move_towards(x = x,y = y,n = n)
 
 
-    def move(self,dx = 0,dy = 0,angle = None,dr = None):
+    def move(self,dx = 0,dy = 0,speed = None,angle = None):
 
         # Store default value for collisions
         is_collision = False
 
+        if speed is not None:
+            if angle is None: angle = self.direction_angle
+            angle = 2* np.pi * angle / 360 - 0.5 * np.pi
+            dx = int(speed * np.cos(angle))
+            dy = int(speed * np.sin(angle))
+
+            self.move(dx = dx,dy = dy)
+
         # Move using radial movement (with angle and radius)
-        if angle is not None:
+        elif angle is not None:
 
             cell_size = self.cell_size
 
             # Compute delta directions with basic trigonometry
             # In a grid environment, movement is rounded to the integer to fit in the grid
-            dx = int(dr * cell_size * np.cos(angle))
-            dy = int(dr * cell_size * np.sin(angle))
+            dx = int(speed * cell_size * np.cos(angle))
+            dy = int(speed * cell_size * np.sin(angle))
 
             return self.move(dx = dx,dy = dy)
 

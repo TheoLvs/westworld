@@ -8,14 +8,13 @@ from win32api import GetSystemMetrics
 
 
 # Custom libraries
-from .spatial import SpatialEnvironment
 from ..algorithms.neighbors import NeighborsFinder
 
 
-class GridEnvironment(SpatialEnvironment):
+class GridEnvironment:
     def __init__(self,width = None,height = None,cell_size = 10,
         objects = None,show_grid = False,grid_color = (50,50,50),background_color = (0,0,0),
-        callbacks_step = None,
+        callbacks_step = None,max_spawn_trials = 1000,
         ):
 
         # Init pygame
@@ -27,6 +26,7 @@ class GridEnvironment(SpatialEnvironment):
         self._done = False
         self.show_grid = show_grid
         self.grid_color = grid_color
+        self.max_spawn_trials = max_spawn_trials
         self.width = width if width is not None else ((GetSystemMetrics(0) - 100) // cell_size)
         self.height = height if height is not None else ((GetSystemMetrics(1) - 100) // cell_size)
         self.background_color = background_color
@@ -47,6 +47,12 @@ class GridEnvironment(SpatialEnvironment):
         # Init objects data
         self.set_data()
         self.render()
+
+
+    @property
+    def is_grid(self):
+        return self.cell_size > 1
+
 
 
     @property
@@ -226,34 +232,38 @@ class GridEnvironment(SpatialEnvironment):
         # Spawn n elements (works also with n = 1)
         for i in range(n):
 
-            # Generate a random position considering or not overlaps
-            x,y = self.get_random_available_pos(allow_overlap = allow_overlap)
+            if not self.is_grid and allow_overlap == False:
 
-            # Spawn new object using spawner
-            # Pass also kwargs to spawner
-            obj = spawner(x,y,**kwargs)
-            self.add_object(obj)
+                x,y = self.get_random_available_pos(allow_overlap = True)
+                obj = spawner(x,y,**kwargs)
+                self.add_object(obj)
+                is_spawned = not obj.collides()[0]
+                i = 0
+
+                while not is_spawned:
+                    x,y = self.get_random_available_pos(allow_overlap = True)
+                    obj.move_at(x = x,y = y)
+                    is_spawned = not obj.collides()[0]
+                    
+                    i += 1
+                    if i > self.max_spawn_trials:
+                        is_spawned = True
+                        self.remove_object(obj)
+
+            else:
+
+                # Generate a random position considering or not overlaps
+                x,y = self.get_random_available_pos(allow_overlap = allow_overlap)
+
+                # Spawn new object using spawner
+                # Pass also kwargs to spawner
+                obj = spawner(x,y,**kwargs)
+
+                self.add_object(obj)
 
         # Append to data
         self.set_data()
 
-
-    #=================================================================================
-    # LAYERS
-    #=================================================================================
-
-
-    def _set_obstacle_layer_group(self):
-        group = pygame.sprite.Group()
-        for layer in self.layers:
-            if layer.obstacle:
-                group.add(layer.sprite)
-        self._obstacle_layer_group = group
-
-
-    # @property
-    # def has_layers(self):
-    #     return len(self.layers) >= 1
 
 
 
