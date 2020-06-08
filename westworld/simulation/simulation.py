@@ -2,6 +2,8 @@
 
 import pygame
 import time
+import numpy as np
+import ffmpeg
 import imageio
 from pathlib import Path
 from tqdm import tqdm_notebook
@@ -43,6 +45,60 @@ class Simulation:
         self.env.render()
 
         return reward,done
+
+
+
+    def save_simulation_video(self,save,frames = None,filepath = None):
+
+        # Saving loop
+        if save is not None:
+            if save == True:
+                filepath = None
+            elif save == False:
+                return None
+            elif isinstance(save,str):
+                filepath = save
+            else:
+                raise SimulationError("Save must be True or a string to name the simulation gif")
+                    
+            if frames is None:
+                frames = self.frame_cache
+
+            if filepath is None:
+
+                filepath = f"{self.name}.mp4"
+
+            img_dir = Path("./captures")
+            img_dir.mkdir(exist_ok=True)
+            filepath = f"./captures/{filepath}"
+
+            print(f"[INFO] Saving video at {filepath}")
+            self._save_video_from_images(filepath,frames,fps = self.fps)
+
+
+    @staticmethod
+    def _save_video_from_images(filepath,images, fps=60, vcodec='libx264'):
+        print()
+        if not isinstance(images, np.ndarray):
+            images = np.asarray(images)
+        n,height,width,channels = images.shape
+        process = (
+            ffmpeg
+                .input('pipe:', format='rawvideo', pix_fmt='rgb24', s='{}x{}'.format(width, height))
+                .output(filepath, pix_fmt='yuv420p', vcodec=vcodec, r=fps)
+                .overwrite_output()
+                .run_async(pipe_stdin=True)
+        )
+        for frame in images:
+            process.stdin.write(
+                frame
+                    .astype(np.uint8)
+                    .tobytes()
+            )
+        process.stdin.close()
+        process.wait()
+
+
 
 
     def save_simulation_gif(self,save,frames = None,filepath = None):
@@ -98,7 +154,7 @@ class Simulation:
         display(slider)
 
 
-    def run_episode(self,n_steps = 100,save = None,replay = False,fps_replay = 5):
+    def run_episode(self,n_steps = 100,save = None,replay = False,fps_replay = 5,save_format = "video"):
 
 
         # Simulation variables
@@ -151,7 +207,12 @@ class Simulation:
 
 
         # Saving simulation as gif
-        self.save_simulation_gif(save = save)
+        if save_format == "video":
+            self.save_simulation_video(save = save)
+        elif save_format == "gif":
+            self.save_simulation_gif(save = save)
+        else:
+            raise Exception("save_format must be 'video' or 'gif'")
         progress_bar.close()
 
         # Quit simulation

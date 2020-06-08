@@ -96,7 +96,7 @@ env.spawn(spawner("I"),10)
 sim = Simulation(env,fps = 25,name = "RoomSIR")
 
 if __name__ == "__main__":
-    sim.run_episode(n_steps = 500,save = False)
+    sim.run_episode(n_steps = 500,save = True,save_format = "video")
 
     logger.df[["S","I","R"]].plot()
     plt.show()
