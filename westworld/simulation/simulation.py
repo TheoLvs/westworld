@@ -78,7 +78,7 @@ class Simulation:
 
     @staticmethod
     def _save_video_from_images(filepath,images, fps=60, vcodec='libx264'):
-        print()
+        # From https://github.com/kkroening/ffmpeg-python/issues/246
         if not isinstance(images, np.ndarray):
             images = np.asarray(images)
         n,height,width,channels = images.shape
