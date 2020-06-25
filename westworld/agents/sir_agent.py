@@ -4,11 +4,11 @@ from scipy.stats import norm
 import numpy as np
 import random
 
-from .grid_agent import BaseGridAgent
+from .agent import BaseAgent
 from ..colors import *
 
 
-class SIRAgent(BaseGridAgent):
+class SIRAgent(BaseAgent):
 
     def __init__(self,x,y,state = "S",recovery_duration_range = [20,50],contact_risk = 3,show_search_radius = False,search_radius_method = "circle",search_radius = 2,*args,**kwargs):
 

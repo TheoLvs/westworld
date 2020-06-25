@@ -1,6 +1,6 @@
-from .grid_agent import BaseGridAgent
+from .agent import BaseAgent
 
-class CollectibleFinderAgent(BaseGridAgent):
+class CollectibleFinderAgent(BaseAgent):
 
 
     def __init__(self,x,y,show_search_radius = True,search_radius_method = "circle",search_radius = 2,*args,**kwargs):

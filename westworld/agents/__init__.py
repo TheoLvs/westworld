@@ -1,1 +1,1 @@
-from .grid_agent import BaseGridAgent
+from .agent import BaseAgent

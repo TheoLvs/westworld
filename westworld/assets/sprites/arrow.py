@@ -4,7 +4,7 @@ def make_arrow(color = (63,72,204),color2 = None,transparency = (200,191,231)):
     if color2 is None:
         color2 = color
 
-    return np.array(
+    return np.flip(np.array(
         [[transparency,
          transparency,
          transparency,
@@ -2505,4 +2505,4 @@ def make_arrow(color = (63,72,204),color2 = None,transparency = (200,191,231)):
          transparency,
          transparency,
          transparency]]
-)
+),axis = 0)

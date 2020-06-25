@@ -170,7 +170,7 @@ class BaseObject(Sprite):
         if color is None: color = self.color
         if screen is None: screen = self.env.screen
         if cell_size is None: cell_size = self.env.cell_size
-        if radius is None: radius = self.radius
+        if radius is None: radius = self.radius 
 
         # When in a grid, the center is normalized on cell size
         if cell_size is not None:
@@ -211,6 +211,7 @@ class BaseObject(Sprite):
                 height * cell_size,
             )
 
+
         # Draw rectangle using pygame
         pygame.draw.rect(screen,color,dimensions,thickness)
 
@@ -222,7 +223,5 @@ class BaseObject(Sprite):
         if cell_size is None: cell_size = self.env.cell_size
         if image is None: image = self.image
         if screen is None: screen = self.env.screen
-
         pos = (x * cell_size,y * cell_size)
-
         screen.blit(image,pos)

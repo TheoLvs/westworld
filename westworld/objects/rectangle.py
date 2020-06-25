@@ -7,7 +7,7 @@ from PIL import Image
 
 from .base_object import BaseObject
 from ..colors import *
-from ..assets import make_blob,make_ball
+from ..assets import make_blob,make_ball,make_arrow
 
 
 
@@ -17,6 +17,7 @@ class BaseRectangle(BaseObject):
         color = (255,0,0),circle = False,radius = None,
         img_filepath = None,img_transparency = (200, 191, 231),
         img_asset = None,
+        img_rotate = False,
         ):
         
         super().__init__()
@@ -30,6 +31,7 @@ class BaseRectangle(BaseObject):
         self._radius = radius
         self.img_filepath = img_filepath
         self.img_asset = img_asset
+        self.img_rotate = img_rotate
 
         if img_transparency is None and img_filepath is not None:
             self.img_transparency = np.array(Image.open(img_filepath))[0,0]
@@ -52,7 +54,7 @@ class BaseRectangle(BaseObject):
             self.rescale_img(width = self.width,height = self.height)
 
         elif self.img_asset is not None:
-            assert self.img_asset in ["blob","ball"]
+            assert self.img_asset in ["blob","ball","arrow"]
 
             if self.img_asset == "blob":
                 img = make_blob(self.color,self.img_transparency)
@@ -61,11 +63,17 @@ class BaseRectangle(BaseObject):
                 color1 = self.color
                 color2 = tuple([lighter_fn(x,0.6) for x in color1])
                 img = make_ball(color1,color2,self.img_transparency)
+            elif self.img_asset == "arrow":
+
+                img = make_arrow(self.color,transparency = self.img_transparency)
 
             # Convert alpha instead of convert with transparent pictures
             self.image = pygame.surfarray.make_surface(img)
             self.image.set_colorkey(self.img_transparency)
             self.rescale_img(width = self.width,height = self.height)
+
+            # Create image copy for rotation
+            self.raw_image = self.image.copy()
 
         else:
             # Sprite init
@@ -94,6 +102,19 @@ class BaseRectangle(BaseObject):
             new_w = width * self.cell_size
             new_h = int(h*new_w/w) if height is None else height * self.cell_size
             self.image = pygame.transform.scale(self.image, (new_w,new_h))
+
+    
+    def rotate_img(self,angle:float) -> None:
+        """Rotate the image by a given angle using Pygame Transform functions
+        Documentation available here https://www.pygame.org/docs/ref/transform.html#pygame.transform.rotate
+        Used to rotate sprites when turning
+
+        Args:
+            angle (float): Input angle in degrees for the rotation
+        """
+
+        self.image = pygame.transform.rotate(self.raw_image,angle)
+
     
 
 
@@ -342,6 +363,9 @@ class BaseRectangle(BaseObject):
                 # pygame.draw.circle(screen,self.color,self.center,self.radius)
     
         else:
+
+            if self.img_rotate:
+                self.rotate_img(self.angle)
 
             self.render_img(screen = screen)
 
