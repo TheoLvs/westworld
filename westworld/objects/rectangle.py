@@ -334,7 +334,12 @@ class BaseRectangle(BaseObject):
     #=================================================================================
 
 
+    def prerender(self):
+        pass
 
+    def postrender(self):
+        pass
+    
 
     def render(self,screen = None):
         """Render function to visualize object in the environment

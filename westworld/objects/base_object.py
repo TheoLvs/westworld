@@ -103,32 +103,56 @@ class BaseObject(Sprite):
 
 
 
-    def collides(self):
+    def collides(self) -> list:
+        """Returns if an object collides with any objects in the environment
+        Needs to be binded to an environment of course
+        The function will computes collisions against:
+            - Rectangular collisions with the blocking sprite group
+            - Mask collisions with the layer sprite group
+            - Rectangular collisions with the trigger sprite group
+
+        TODO:
+        Could be improved to account for trigger layers
+
+        Returns:
+            list: List of objects in collisions, empty if no collision
+        """
+        
 
         collisions = []
 
         # Find all rect collisions
         if self.env.has_blocking():
-            _,c = self.collides_group(self.env.group_blocking,method = "rect")
+            c = self.collides_group(self.env.group_blocking,method = "rect")
             collisions.extend(c)
 
         # Find all mask collisions
         if self.env.has_layers():
-            _,c = self.collides_group(self.env.group_layers,method = "mask")
+            c = self.collides_group(self.env.group_layers,method = "mask")
             collisions.extend(c)
 
         if self.env.has_triggers():
-            _,triggers = self.collides_group(self.env.group_triggers,method = "rect")
+            triggers = self.collides_group(self.env.group_triggers,method = "rect")
             for trigger in triggers:
                 trigger.on_collision(self)
 
-        is_collision = len(collisions) > 0
-        return is_collision,collisions
+        return collisions
 
 
 
 
-    def collides_group(self,group,method = "rect",ratio = None,radius = None):
+    def collides_group(self,group:pygame.sprite.Group, method:str = "rect", ratio:float = None) -> list:
+        """Collision helper functions, computes if an object enters a collision with a sprite group
+        Three methods are available (rect, circle and mask)
+
+        Args:
+            group (pygame.sprite.Group): The target sprite group on which to test collisions
+            method (str, optional): Collision method, either rectangular, circular or using a pixel perfect mask. Defaults to "rect".
+            ratio (float, optional): Apply a ratio around the center of the object, useful to get collisions in a circle range. Defaults to None.
+
+        Returns:
+            list: List of objects in collisions, empty if no collision
+        """
 
         # Verify method is in acceptable values
         assert method in ["rect","circle","mask"]
@@ -157,9 +181,8 @@ class BaseObject(Sprite):
 
         # Filter to remove self object from collisions 
         collisions = [x for x in collisions if x.id != self.id]
-        is_collision = len(collisions) > 0
 
-        return is_collision,collisions
+        return collisions
 
 
     def render_circle(self,x = None,y = None,radius = None,color = None,screen = None,thickness = 0,cell_size = None):
@@ -184,6 +207,21 @@ class BaseObject(Sprite):
     
     def render_image(self):
         pass
+
+    
+    def render_text(self,text,font = "Arial",size = 30,screen = None,color = (255,255,255)):
+        
+        x = self.x
+        y = self.y
+        cell_size = self.env.cell_size
+        
+        position = (
+            int(x* cell_size),
+            int(y* cell_size),
+        )
+
+        self.env.render_text(text,font,size,position,screen,color = color)
+
 
 
     def render_rect(self,x = None,y = None,width = None,height = None,radius = None,color = None,center = False,screen = None,cell_size = None,thickness = 0):

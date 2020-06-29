@@ -47,11 +47,22 @@ class GridEnvironment:
         # Init objects data
         self.set_data()
         self.render()
+        
 
 
     @property
     def is_grid(self):
         return self.cell_size > 1
+
+
+    def make_group(self,condition = None):
+        group = pygame.sprite.Group()
+
+        if condition is not None:
+            objs = self.find_objects(condition = condition,return_objects = True)
+            group.add(objs)
+
+        return group
 
 
 
@@ -469,6 +480,13 @@ class GridEnvironment:
                 pygame.draw.rect(self.screen, color, rect, 1)
 
 
+    def prerender(self):
+        pass
+
+
+    def postrender(self):
+        pass
+
 
     def render(self,screen = None):
         """Render the environment
@@ -486,7 +504,9 @@ class GridEnvironment:
 
         # Render each object
         for el in self.objects:
+            el.prerender()
             el.render(screen = screen)
+            el.postrender()
 
         # Update the PyGame renderer
         pygame.display.update()

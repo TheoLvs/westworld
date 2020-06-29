@@ -42,7 +42,9 @@ class Simulation:
         reward,done = self.env.step()
 
         # Render all objects in the environment
+        self.env.prerender()
         self.env.render()
+        self.env.postrender()
 
         return reward,done
 

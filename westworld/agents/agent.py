@@ -172,6 +172,7 @@ class BaseAgent(BaseRectangle):
                 return True
 
 
+        # TODO add in naive pathfinding
         if naive:
             MOVES = []
             if self.x > x:
@@ -212,9 +213,26 @@ class BaseAgent(BaseRectangle):
         self.move_towards(x = x,y = y,n = n)
 
 
-    def move(self,dx = 0,dy = 0,speed = None,angle = None):
+    def move(self,dx:int = 0,dy:int = 0,speed:float = None,angle:float = None) -> bool:
+        """Movement main function, moves an agent to a new location
+        Movement can either be launched with:
+            1/ a delta x and y (useful in grid environments) (if speed is None)
+            2/ Or using a given speed and angle (useful in spatial environments) (if speed is given)
 
-        # Store default value for collisions
+        The movement will be blocked if the object has a blocking property == True
+        and enters a collision given by self.collides()
+
+        Args:
+            dx (int, optional): Delta x for the movement. Defaults to 0.
+            dy (int, optional): Delta y for the movement. Defaults to 0.
+            speed (float, optional): Speed for the angular movement. Defaults to None.
+            angle (float, optional): Angle for the movement. Defaults to None.
+
+        Returns:
+            bool: [description]
+        """
+
+        # Store default values for collisions
         is_collision = False
 
         if speed is not None:
@@ -256,9 +274,10 @@ class BaseAgent(BaseRectangle):
             self.y = y
 
             # Compute collisions
-            is_collision,collisions = self.collides()
-            # is_collision,collisions = self.collides_with(self.env.objects,x = x,y = y)
+            collisions = self.collides()
+            is_collision = len(collisions) > 0
 
+            # If in collision, cancel movement and trigger block callback
             if is_collision:
                 self.x,self.y = old_pos
                 self.when_blocked(collisions)
