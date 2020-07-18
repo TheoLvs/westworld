@@ -156,33 +156,37 @@ class Simulation:
         display(slider)
 
 
-    def run_episode(self,n_steps = 100,save = None,replay = False,fps_replay = 5,save_format = "video"):
+    def run_episode(self,n_steps = 100,save = None,replay = False,fps_replay = 5,save_format = "video",render = True):
 
 
         # Simulation variables
         simulation_on = True
         i = 0
         clock = pygame.time.Clock()
+        rewards_episode = []
 
         # Create progress bar
         progress_bar = tqdm_notebook(total=n_steps)
 
         # Cache first frame if needed
-        if save is not None:
-            self.cache_frame()
+        if render:
+            if save is not None or replay:
+                self.cache_frame()
 
         # Main simulation loop for one episode
         while simulation_on:
 
             # Main step function
             reward,done = self.step()
+            rewards_episode.append(reward)
 
-            # Cache frame if needed
-            if save is not None:
-                self.cache_frame()
+            if render:
+                # Cache frame if needed
+                if save is not None or replay:
+                    self.cache_frame()
 
-            # Wait between frames
-            clock.tick(self.fps)
+                # Wait between frames
+                clock.tick(self.fps)
 
             # Quitting loop
             for event in pygame.event.get():
@@ -208,21 +212,27 @@ class Simulation:
                 simulation_on = False
 
 
-        # Saving simulation as gif
-        if save_format == "video":
-            self.save_simulation_video(save = save)
-        elif save_format == "gif":
-            self.save_simulation_gif(save = save)
-        else:
-            raise Exception("save_format must be 'video' or 'gif'")
+        # Saving simulation as gif or video
+        if render:
+            if save_format == "video":
+                self.save_simulation_video(save = save)
+            elif save_format == "gif":
+                self.save_simulation_gif(save = save)
+            else:
+                raise Exception("save_format must be 'video' or 'gif'")
         progress_bar.close()
 
         # Quit simulation
         self.env.quit()
 
         # Replay
-        if replay:
-            self.replay_episode(fps = fps_replay)
+        if render:
+            if replay:
+                self.replay_episode(fps = fps_replay)
+
+        # Return episode reward
+        reward_episode = np.sum(rewards_episode)
+        return reward_episode
 
 
     def get_mouse_pos(self):

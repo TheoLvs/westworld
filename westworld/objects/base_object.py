@@ -92,6 +92,7 @@ class BaseObject(Sprite):
         return 1
 
 
+
     @property
     def layer(self):
         return False
@@ -107,7 +108,7 @@ class BaseObject(Sprite):
         """Returns if an object collides with any objects in the environment
         Needs to be binded to an environment of course
         The function will computes collisions against:
-            - Rectangular collisions with the blocking sprite group
+            - Rectangular or circle collisions with the blocking sprite group
             - Mask collisions with the layer sprite group
             - Rectangular collisions with the trigger sprite group
 
@@ -123,7 +124,7 @@ class BaseObject(Sprite):
 
         # Find all rect collisions
         if self.env.has_blocking():
-            c = self.collides_group(self.env.group_blocking,method = "rect")
+            c = self.collides_group(self.env.group_blocking,method = self.collision_method)
             collisions.extend(c)
 
         # Find all mask collisions
@@ -168,11 +169,11 @@ class BaseObject(Sprite):
         elif method == "circle":
             # Warning, to check ratio works with rect but for circle 
             # We need to add the cell_size, maybe works as a radius and not a ratio
-            ratio = ratio * self.env.cell_size
 
             if ratio is  None:
                 collisions = pygame.sprite.spritecollide(self,group,False,pygame.sprite.collide_circle)
             else:
+                ratio = ratio * self.env.cell_size
                 collisions = pygame.sprite.spritecollide(self,group,False,pygame.sprite.collide_circle_ratio(ratio))
 
         # Mask collider

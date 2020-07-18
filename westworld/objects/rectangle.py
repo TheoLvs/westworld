@@ -18,6 +18,7 @@ class BaseRectangle(BaseObject):
         img_filepath = None,img_transparency = (200, 191, 231),
         img_asset = None,
         img_rotate = False,
+        collision_method = "rect",
         ):
         
         super().__init__()
@@ -32,6 +33,9 @@ class BaseRectangle(BaseObject):
         self.img_filepath = img_filepath
         self.img_asset = img_asset
         self.img_rotate = img_rotate
+
+        assert collision_method in ["rect","circle"]
+        self._collision_method = collision_method
 
         if img_transparency is None and img_filepath is not None:
             self.img_transparency = np.array(Image.open(img_filepath))[0,0]
@@ -116,6 +120,10 @@ class BaseRectangle(BaseObject):
         self.image = pygame.transform.rotate(self.raw_image,angle)
 
     
+    @property
+    def collision_method(self):
+        assert self._collision_method in ["rect","circle"]
+        return self._collision_method
 
 
     @property
@@ -125,6 +133,8 @@ class BaseRectangle(BaseObject):
     @property
     def y(self):
         return self._y
+
+
 
 
     @x.setter

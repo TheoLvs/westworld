@@ -267,7 +267,7 @@ class BaseAgent(BaseRectangle):
 
             # Correct moves going offscreen
             # TODO use this function only in toroidal environments
-            x,y = self.env.correct_offscreen_move(x,y)
+            x,y = self.env.wrap_in_toroidal_envs(x,y)
 
             # Store new positions as attributes
             self.x = x

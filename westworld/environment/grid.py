@@ -15,6 +15,7 @@ class GridEnvironment:
     def __init__(self,width = None,height = None,cell_size = 10,
         objects = None,show_grid = False,grid_color = (50,50,50),background_color = (0,0,0),
         callbacks_step = None,max_spawn_trials = 1000,
+        toroidal = True,
         ):
 
         # Init pygame
@@ -31,6 +32,7 @@ class GridEnvironment:
         self.height = height if height is not None else ((GetSystemMetrics(1) - 100) // cell_size)
         self.background_color = background_color
         self.callbacks_step = [] if callbacks_step is None else callbacks_step
+        self.toroidal = toroidal
 
         # Groups initialization
         self.group_blocking = pygame.sprite.Group()
@@ -201,28 +203,33 @@ class GridEnvironment:
     #=================================================================================
 
 
-    def correct_offscreen_move(self,x,y):
+    def wrap_in_toroidal_envs(self,x,y):
 
-        env_width = self.width
-        env_height = self.height
+        if self.toroidal:
 
-        # Check with x
-        if x >= env_width:
-            new_x = 0
-        elif x < 0:
-            new_x = env_width - 1
+            env_width = self.width
+            env_height = self.height
+
+            # Check with x
+            if x >= env_width:
+                new_x = 0
+            elif x < 0:
+                new_x = env_width - 1
+            else:
+                new_x = x
+
+            # Check with y
+            if y >= env_height: 
+                new_y = 0
+            elif y < 0:
+                new_y = env_height - 1
+            else:
+                new_y = y
+
+            return new_x,new_y
+
         else:
-            new_x = x
-
-        # Check with y
-        if y >= env_height: 
-            new_y = 0
-        elif y < 0:
-            new_y = env_height - 1
-        else:
-            new_y = y
-
-        return new_x,new_y
+            return x,y
 
 
     def is_object_colliding(self,obj):
@@ -388,6 +395,12 @@ class GridEnvironment:
     def callback_step(self):
         pass
 
+    def post_step(self):
+        pass
+
+    def compute_reward(self):
+        return 0
+
     def step(self):
 
         # Iterate for each object
@@ -407,9 +420,12 @@ class GridEnvironment:
         for fn in self.callbacks_step:
             fn(self)
 
+
+        self.post_step()
+
         # Prepare reward and done
         # TODO add reward
-        reward = 0
+        reward = self.compute_reward()
         done = self.done
 
         return reward,done
