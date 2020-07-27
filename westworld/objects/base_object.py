@@ -58,6 +58,10 @@ class BaseObject(Sprite):
         """Default setter function
         """
         self._env = env
+        self.post_bind()
+
+    def post_bind(self):
+        pass
 
 
     def init(self):
