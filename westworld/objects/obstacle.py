@@ -14,7 +14,3 @@ class BaseObstacle(BaseRectangle):
     @property
     def stationary(self):
         return True
-
-
-    def __repr__(self):
-        return f"Obstacle({self.x},{self.y},size=({self.width},{self.height}))"

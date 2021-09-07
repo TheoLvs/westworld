@@ -41,5 +41,3 @@ class BaseTrigger(BaseRectangle):
         self.on_trigger(obj)
         self.on_trigger_exit(obj)
 
-    def __repr__(self):
-        return f"Trigger({self.x},{self.y})"

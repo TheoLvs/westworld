@@ -23,6 +23,7 @@ class GridEnvironment:
         self.screen = pygame.display.set_mode((1,1),0,0)
 
         # Store parameters
+        self._clock = 0
         self._cell_size = cell_size
         self._done = False
         self.show_grid = show_grid
@@ -100,6 +101,17 @@ class GridEnvironment:
 
 
     @property
+    def clock(self):
+        """Default internal clock for each object
+        """
+        return self._clock
+
+    def clocktick(self):
+        """Helper function to increment internal clock
+        """
+        self._clock += 1
+
+    @property
     def data(self):
         return self._data
 
@@ -163,12 +175,13 @@ class GridEnvironment:
                 
 
 
-    def find_objects(self,condition = None,return_pos = False,return_objects = False,return_data = False,**kwargs):
+    def find(self,return_pos = False,return_objects = True,return_data = False,**kwargs):
         # TODO is it faster with numpy or pandas
         # The loop could be accelerated with numba?
+        # Previously called find_objects
         ids = []
 
-        if condition is None:
+        if len(kwargs) == 0:
             ids = [x.id for x in self.objects]
         else:
             def helper_check_fn(obj,k,v):
@@ -178,19 +191,18 @@ class GridEnvironment:
                     return getattr(obj,k) == v
 
             for obj in self.objects:
-                if all([helper_check_fn(obj,k,v) for k,v in condition.items()]):
+                if all([helper_check_fn(obj,k,v) for k,v in kwargs.items()]):
                     ids.append(obj.id)
                 
 
         if return_pos:
             return [self._objects[k].pos for k in ids]
-        elif return_objects:
-            return [self._objects[k] for k in ids]
         elif return_data:
             return self.data.loc[ids]
-        else:
+        elif not return_objects:
             return ids
-
+        else:
+            return [self._objects[k] for k in ids]
 
 
 
@@ -427,6 +439,9 @@ class GridEnvironment:
         # TODO add reward
         reward = self.compute_reward()
         done = self.done
+
+        # Increment internal clock
+        self.clocktick()
 
         return reward,done
 

@@ -33,9 +33,6 @@ class BaseAgent(BaseRectangle):
         return False
 
 
-    def __repr__(self):
-        return f"Agent({self.x},{self.y})"
-
 
 
     #=================================================================================
@@ -164,12 +161,21 @@ class BaseAgent(BaseRectangle):
     def move_towards(self,x = None,y = None,obj = None,n = None,naive = False):
         """Movement function, during one step the agent will move towards a target position or object using pathfinding
         """
+
+
         if obj is None:
             if self.pos == (x,y):
                 return True
         else:
+
+            # If given object is a string, we retrieve the object from the inventory using the id
+            # Returns an error if the object id is not in the inve  ntory
+            if isinstance(obj,str): obj = self.env[obj]
+
             if self.pos == obj.pos:
                 return True
+
+            x,y = obj.pos
 
 
         # TODO add in naive pathfinding
@@ -308,41 +314,42 @@ class BaseAgent(BaseRectangle):
     #=================================================================================
 
 
-    def find_closest(self,condition = None,k = 1):
+    def find_closest(self,k = 1,**kwargs):
 
         # Get objects data we want to search
-        objects_data = self.env.find_objects(condition = condition,return_data = True)
+        objects_data = self.env.find(return_data = True,**kwargs)
         objects_data = objects_data.drop(self.id,errors = "ignore")
         
         if len(objects_data) == 0:
-            return [],[]
+            distances,ids = [],[]
         else:
             # Create neighbors algorithm
             finder = NeighborsFinder(objects_data)
             distances,ids = finder.find_closest(self,k = k)
-            return distances,ids
+
+        return ids
 
 
-    def find(self,condition = None,return_objects = True,**kwargs):
-        return self.env.find_objects(condition = condition,return_objects = return_objects,**kwargs)
+    def find(self,return_objects = True,**kwargs):
+        return self.env.find(return_objects = return_objects,**kwargs)
 
 
-    def find_in_range(self,condition = None,search_radius = None,method = "circle"):
+    def find_in_range(self,radius = None,method = "circle",**kwargs):
         # TODO add parameters to only find objects that matters
         # For example not using obstacles
         # Easily done by appending to condition to add obstacles = False
 
-        if search_radius is None:
-            search_radius = self.search_radius
-            assert self.search_radius is not None
+        if radius is None:
+            radius = self.search_radius
+            assert radius is not None
 
         group = pygame.sprite.Group()
         
-        objs = self.env.find_objects(condition = condition,return_objects = True)
+        objs = self.env.find(return_objects = True,**kwargs)
         group.add(*objs)
 
-        search = self.collides_group(group,method = method,ratio = search_radius)
-        return search[1]
+        search = self.collides_group(group,method = method,ratio = radius)
+        return search
 
 
         # # Find objects data

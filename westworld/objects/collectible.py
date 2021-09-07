@@ -12,8 +12,6 @@ class BaseCollectible(BaseTrigger):
     It's simply define by subclassing the trigger class, ie a non-stationary non-blocking object with a callback on collision
     """
 
-    def __repr__(self):
-        return f"Collectible({self.x},{self.y})"
 
 
     # def step(self):

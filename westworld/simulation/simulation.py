@@ -173,6 +173,10 @@ class Simulation:
             if save is not None or replay:
                 self.cache_frame()
 
+        # Set data for first initialization in case it was not computed
+        # TODO optimize and remove this requirement
+        self.env.set_data()
+
         # Main simulation loop for one episode
         while simulation_on:
 

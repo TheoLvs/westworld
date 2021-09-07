@@ -154,6 +154,13 @@ class BaseRectangle(BaseObject):
     def value(self):
         return 1
 
+    @property
+    def name(self):
+        return self.__class__.__name__
+
+    def __repr__(self):
+        return f"{self.name}({self.x},{self.y})"
+
 
     @property
     def pos(self):
