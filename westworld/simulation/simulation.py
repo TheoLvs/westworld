@@ -3,6 +3,7 @@
 import pygame
 import time
 import numpy as np
+import pandas as pd
 import ffmpeg
 import imageio
 from pathlib import Path
@@ -39,14 +40,14 @@ class Simulation:
         """
 
         # Step for the environment
-        reward,done = self.env.step()
+        reward,done,episode_data = self.env.step()
 
         # Render all objects in the environment
         self.env.prerender()
         self.env.render()
         self.env.postrender()
 
-        return reward,done
+        return reward,done,episode_data
 
 
 
@@ -163,7 +164,8 @@ class Simulation:
         simulation_on = True
         i = 0
         clock = pygame.time.Clock()
-        rewards_episode = []
+        episode_rewards = []
+        episode_data = []
 
         # Create progress bar
         progress_bar = tqdm_notebook(total=n_steps)
@@ -181,8 +183,9 @@ class Simulation:
         while simulation_on:
 
             # Main step function
-            reward,done = self.step()
-            rewards_episode.append(reward)
+            reward,done,step_data = self.step()
+            episode_rewards.append(reward)
+            episode_data.extend(step_data)
 
             if render:
                 # Cache frame if needed
@@ -235,8 +238,11 @@ class Simulation:
                 self.replay_episode(fps = fps_replay)
 
         # Return episode reward
-        reward_episode = np.sum(rewards_episode)
-        return reward_episode
+        episode_reward = np.sum(episode_rewards)
+
+        # Return episode data
+        episode_data = pd.DataFrame(episode_data)
+        return episode_reward,episode_data
 
 
     def get_mouse_pos(self):

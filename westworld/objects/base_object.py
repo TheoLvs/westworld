@@ -37,7 +37,8 @@ class BaseObject(Sprite):
 
 
     def kill(self):
-        self.env.remove_object(self)
+        if self.id in self.env._objects.keys():
+            self.env.remove_object(self)
 
 
     @property

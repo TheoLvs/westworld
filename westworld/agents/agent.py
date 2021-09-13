@@ -2,6 +2,7 @@
 import numpy as np
 import random
 import pygame
+from collections import defaultdict
 
 from ..objects.rectangle import BaseRectangle
 from ..algorithms.pathfinding.astar import AStar
@@ -26,14 +27,27 @@ class BaseAgent(BaseRectangle):
         self.set_direction()
         self.curiosity = curiosity
         self.search_radius = search_radius
+        self._counter = defaultdict(int)
  
 
     @property
     def stationary(self):
         return False
 
+    def starts_counting(self,name):
+        self._counter[name] = 1
+
+    def counter(self,name):
+        return self._counter[name]
+
+    def counter_step(self):
+        for key,value in self._counter.items():
+            self._counter[key] += 1
 
 
+    def log(self,d):
+        d = {"id":self.id,**d}
+        self.env.log(d)
 
     #=================================================================================
     # MOVEMENTS

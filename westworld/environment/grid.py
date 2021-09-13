@@ -50,6 +50,9 @@ class GridEnvironment:
         # Init objects data
         self.set_data()
         self.render()
+
+        # Prepare logs
+        self._logs = []
         
 
 
@@ -443,7 +446,22 @@ class GridEnvironment:
         # Increment internal clock
         self.clocktick()
 
-        return reward,done
+        # Prepare step data
+        step_data = self.get_logs()
+        self.reset_logs()
+
+        return reward,done,step_data
+
+
+    def log(self,d):
+        d = {"step":self.clock,**d}
+        self._logs.append(d)
+
+    def get_logs(self):
+        return self._logs
+
+    def reset_logs(self):
+        self._logs = []
 
 
     #=================================================================================
