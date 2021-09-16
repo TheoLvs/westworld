@@ -1,5 +1,6 @@
 # Westworld
-![](docs/img/cover_hq_westworld1.jpg)
+![](./img/cover_hq_westworld1.jpg)
+> *Photo by Alexander London on Unsplash*
 
 # Description
 **Westworld** is a multi-agent simulation library, its goal to simulate and optimize systems and environments with multiple agents interacting. Its inspiration is drawn from Unity software and [Unity ML Agents](https://github.com/Unity-Technologies/ml-agents), adapted in Python. 
@@ -12,9 +13,6 @@ The goal is to be able to simulate environments in logistics, retails, epidemiol
     Please contact [us](mailto:theo.alves.da.costa@gmail.com) if you have any question
 
 *The name is of course inspired by the TV series Westworld, which is actually a gigantic multi-agent simulation system.*
-
-# Documentation
-Documentation is available locally in docs folder or online at https://theolvs.github.io/westworld
 
 
 ## Features
@@ -47,4 +45,8 @@ poetry run python
 
 ## Contributors
 - [Théo Alves Da Costa](mailto:theo.alves.da.costa@gmail.com)
+
+
+
+
 

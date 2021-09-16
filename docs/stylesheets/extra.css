@@ -1,0 +1,64 @@
+
+.md-content__inner.md-typeset {
+    font-size:16px ;
+}
+
+.output_area{
+    font-size:14px;
+    background-color:#e7f4ff;
+}
+
+.md-grid{
+    max-width: 70rem;
+}
+ 
+.md-sidebar--secondary{
+    margin-left: 1rem;
+    margin-right: 1rem;
+ 
+}
+
+.md-header{
+    background-color:#151c36;
+}
+
+
+.md-footer{
+    background-color:#151c36;
+}
+
+
+.md-tabs{
+    background-color:#151c36;
+}
+
+.admonition > p{
+    font-size:14px;
+}
+.admonition {
+    font-size:14px !important;
+}
+
+
+.output_text > pre > code{
+    background:none;
+}
+
+/* body{
+    font-family:Inter;
+
+} */
+
+h2{
+    color:#e61f84;
+    font-weight:700 !important;
+}
+
+
+:root {
+
+
+  /* Primary color shades */
+  --md-primary-fg-color:               #151c36;
+
+  }
