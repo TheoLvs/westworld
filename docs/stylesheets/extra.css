@@ -54,6 +54,10 @@ h2{
     font-weight:700 !important;
 }
 
+h1{
+    margin-bottom:20px !important;
+}
+
 
 :root {
 
@@ -62,3 +66,4 @@ h2{
   --md-primary-fg-color:               #151c36;
 
   }
+
