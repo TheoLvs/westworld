@@ -14,7 +14,7 @@ matplotlib = "^3.4.2"
 tqdm = "^4.61.2"
 
 [tool.poetry.dev-dependencies]
-pywin32 = { version = "^227", markers = "sys_platform == 'win32'" }
+pywin32 = { version = "^301", markers = "sys_platform == 'win32'" }
 jupyter = "^1.0.0"
 mkdocs = "^1.2.1"
 mkdocs-material = "^7.1.10"
