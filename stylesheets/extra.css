@@ -1,34 +1,69 @@
+
+.md-content__inner.md-typeset {
+    font-size:16px ;
+}
+
+.output_area{
+    font-size:14px;
+    background-color:#e7f4ff;
+}
+
+.md-grid{
+    max-width: 70rem;
+}
+ 
+.md-sidebar--secondary{
+    margin-left: 1rem;
+    margin-right: 1rem;
+ 
+}
+
 .md-header{
-    /* background-image: linear-gradient(to left, #30cfd0 0%, #330867 100%); */
-    /* background-image: linear-gradient(to left, #3ab5b0 0%, #3d99be 31%, #56317a 100%); */
-    /* background-image: linear-gradient(to left, #FF3CAC 0%,#17adc9 30%, #562B7C 52%, #0b3f67 100%); */
-    background-image: linear-gradient(to left, #F35A81 0%, #562B7C 52%, #0b3f67 100%);
+    background-color:#151c36;
 }
 
 
 .md-footer{
-    background-image: linear-gradient(to left, #F35A81 0%, #562B7C 52%, #0b3f67 100%);
-    /* background-image: linear-gradient(to left, #FF3CAC 0%,#17adc9 30%, #562B7C 52%, #0b3f67 100%); */
-    /* background-image: linear-gradient(to left, #3ab5b0 0%, #3d99be 31%, #56317a 100%); */
-    /* background-image: linear-gradient(to left, #FF3CAC 0%, #562B7C 52%, #2B86C5 100%); */
-    /* background-image: linear-gradient(-225deg, #FF3CAC 0%, #562B7C 52%, #2B86C5 100%); */
-    /* background-image: linear-gradient(to left, #30cfd0 0%, #330867 100%); */
+    background-color:#151c36;
 }
 
 
 .md-tabs{
-    background-image: linear-gradient(to left, #F35A81 0%, #562B7C 52%, #0b3f67 100%);
-    /* background-image: linear-gradient(to left, #FF3CAC 0%,#17adc9 30%, #562B7C 52%, #0b3f67 100%); */
-    /* background-image: linear-gradient(to left, #FF3CAC 0%, #562B7C 52%, #2B86C5 100%); */
-    /* background-image: linear-gradient(to left, #3ab5b0 0%, #3d99be 31%, #56317a 100%); */
-    /* background-image: linear-gradient(-225deg, #FF3CAC 0%, #562B7C 52%, #2B86C5 100%); */
-    /* background-image: linear-gradient(to left, #30cfd0 0%, #330867 100%); */
+    background-color:#151c36;
 }
+
+.admonition > p{
+    font-size:14px;
+}
+.admonition {
+    font-size:14px !important;
+}
+
+
+.output_text > pre > code{
+    background:none;
+}
+
+/* body{
+    font-family:Inter;
+
+} */
+
+h2{
+    color:#e61f84;
+    font-weight:700 !important;
+}
+
+h1{
+    margin-bottom:20px !important;
+}
+
 
 :root {
 
 
   /* Primary color shades */
-  --md-primary-fg-color:               #330867;
+  --md-primary-fg-color:               #151c36;
 
   }
+
