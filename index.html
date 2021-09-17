@@ -194,11 +194,18 @@
   
   
   
+    
+
+  
+  
+  
     <li class="md-tabs__item">
-      <a href="tutorials/simple_pathfinding/" class="md-tabs__link">
+      <a href="tutorials/quickstart/" class="md-tabs__link">
         Tutorials
       </a>
     </li>
+  
+
   
 
       
@@ -333,6 +340,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#quickstart" class="md-nav__link">
+    Quickstart
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#features" class="md-nav__link">
     Features
   </a>
@@ -393,6 +407,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#javascript-version" class="md-nav__link">
+    Javascript version
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -447,9 +468,32 @@
   
   
   
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_1" type="checkbox" id="__nav_2_1" >
+      
+      <label class="md-nav__link" for="__nav_2_1">
+        Basic
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="Basic" data-md-level="2">
+        <label class="md-nav__title" for="__nav_2_1">
+          <span class="md-nav__icon md-icon"></span>
+          Basic
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
     <li class="md-nav__item">
-      <a href="tutorials/simple_pathfinding/" class="md-nav__link">
-        Simple pathfinding
+      <a href="tutorials/quickstart/" class="md-nav__link">
+        Quickstart
       </a>
     </li>
   
@@ -460,9 +504,80 @@
   
   
     <li class="md-nav__item">
-      <a href="tutorials/simple_visionrange/" class="md-nav__link">
-        Simple vision range
+      <a href="tutorials/movements/" class="md-nav__link">
+        Movements
       </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="tutorials/objects/" class="md-nav__link">
+        Objects
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_2" type="checkbox" id="__nav_2_2" >
+      
+      <label class="md-nav__link" for="__nav_2_2">
+        Extra features
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="Extra features" data-md-level="2">
+        <label class="md-nav__title" for="__nav_2_2">
+          <span class="md-nav__icon md-icon"></span>
+          Extra features
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="tutorials/maze/" class="md-nav__link">
+        Maze generation
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="tutorials/other/" class="md-nav__link">
+        Other
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
     </li>
   
 
@@ -548,6 +663,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#quickstart" class="md-nav__link">
+    Quickstart
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#features" class="md-nav__link">
     Features
   </a>
@@ -608,6 +730,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#javascript-version" class="md-nav__link">
+    Javascript version
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -628,7 +757,7 @@
 </blockquote>
 <h2 id="description">Description<a class="headerlink" href="#description" title="Permanent link">&para;</a></h2>
 <p><strong>Westworld</strong> is a multi-agent simulation library, its goal to simulate and optimize systems and environments with multiple agents interacting. Its inspiration is drawn from Unity software and <a href="https://github.com/Unity-Technologies/ml-agents">Unity ML Agents</a>, adapted in Python. </p>
-<p>The goal is to be able to simulate environments in logistics, retails, epidemiology, providing pre-coded spatial environments and communication between agents. Optimization can be included using heuristics as well as Reinforcement Learning.</p>
+<p>The goal is to be able to simulate environments in logistics, retail, epidemiology, providing pre-coded spatial environments and communication between agents. Optimization can be included using heuristics as well as Reinforcement Learning.</p>
 <div class="admonition warning">
 <p class="admonition-title">Experimental</p>
 <p>This library is extremely experimental, under active development and alpha-release
@@ -636,6 +765,54 @@ Don't expect the documentation to be up-to-date or all features to be tested
 Please contact <a href="mailto:theo.alves.da.costa@gmail.com">us</a> if you have any question</p>
 </div>
 <p><em>The name is of course inspired by the TV series Westworld, which is actually a gigantic multi-agent simulation system.</em></p>
+<h2 id="quickstart">Quickstart<a class="headerlink" href="#quickstart" title="Permanent link">&para;</a></h2>
+<p>Let's model an ecosystem of rabbits looking and competing for food</p>
+<p><img alt="" src="tutorials/img/Quickstart_1631837803.gif" /></p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">westworld.environment</span> <span class="kn">import</span> <span class="n">GridEnvironment</span>
+<span class="kn">from</span> <span class="nn">westworld.agents</span> <span class="kn">import</span> <span class="n">BaseAgent</span>
+<span class="kn">from</span> <span class="nn">westworld.objects</span> <span class="kn">import</span> <span class="n">BaseCollectible</span>
+<span class="kn">from</span> <span class="nn">westworld.simulation</span> <span class="kn">import</span> <span class="n">Simulation</span>
+<span class="kn">from</span> <span class="nn">westworld.colors</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="k">class</span> <span class="nc">Food</span><span class="p">(</span><span class="n">BaseCollectible</span><span class="p">):</span>
+    <span class="k">pass</span>
+
+<span class="k">class</span> <span class="nc">Rabbit</span><span class="p">(</span><span class="n">BaseAgent</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">curiosity</span> <span class="o">=</span> <span class="mi">5</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">color</span> <span class="o">=</span> <span class="p">(</span><span class="mi">229</span><span class="p">,</span> <span class="mi">229</span><span class="p">,</span> <span class="mi">229</span><span class="p">),</span><span class="n">curiosity</span> <span class="o">=</span> <span class="n">curiosity</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="c1"># Find closest food</span>
+        <span class="n">targets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_closest</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;Food&quot;</span><span class="p">,</span><span class="n">k</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># If there is still food, move towards the food</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">targets</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+
+            <span class="n">target</span> <span class="o">=</span> <span class="n">targets</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+            <span class="c1"># Use naive pathfinding for faster computation as there is no obstacle</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">move_towards</span><span class="p">(</span><span class="n">obj</span> <span class="o">=</span> <span class="n">target</span><span class="p">,</span><span class="n">naive</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1"># Otherwise just wandering</span>
+        <span class="c1"># Changing direction every n steps where n = curiosity</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">wander</span><span class="p">()</span>
+
+<span class="n">food_spawner</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">,</span><span class="n">y</span> <span class="p">:</span> <span class="n">Food</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">color</span> <span class="o">=</span> <span class="p">(</span><span class="mi">220</span><span class="p">,</span><span class="mi">150</span><span class="p">,</span><span class="mi">50</span><span class="p">),</span><span class="n">img_asset</span> <span class="o">=</span> <span class="s2">&quot;ball&quot;</span><span class="p">)</span>
+<span class="n">rabbit_spawner</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">,</span><span class="n">y</span> <span class="p">:</span> <span class="n">Rabbit</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">curiosity</span> <span class="o">=</span> <span class="mi">5</span><span class="p">)</span>
+
+<span class="c1"># Setup environment</span>
+<span class="n">env</span> <span class="o">=</span> <span class="n">GridEnvironment</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">20</span><span class="p">,</span><span class="n">show_grid</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span><span class="n">background_color</span><span class="o">=</span><span class="p">(</span><span class="mi">102</span><span class="p">,</span> <span class="mi">178</span><span class="p">,</span> <span class="mi">102</span><span class="p">),</span><span class="n">grid_color</span><span class="o">=</span><span class="p">(</span><span class="mi">127</span><span class="p">,</span> <span class="mi">191</span><span class="p">,</span> <span class="mi">127</span><span class="p">),</span><span class="n">toroidal</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">env</span><span class="o">.</span><span class="n">spawn</span><span class="p">(</span><span class="n">rabbit_spawner</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">env</span><span class="o">.</span><span class="n">spawn</span><span class="p">(</span><span class="n">food_spawner</span><span class="p">,</span><span class="mi">20</span><span class="p">)</span>
+<span class="n">env</span><span class="o">.</span><span class="n">render</span><span class="p">()</span>
+
+<span class="c1"># Make simulation</span>
+<span class="n">sim</span> <span class="o">=</span> <span class="n">Simulation</span><span class="p">(</span><span class="n">env</span><span class="p">,</span><span class="n">fps</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Quickstart&quot;</span><span class="p">)</span>
+<span class="n">_</span><span class="p">,</span><span class="n">_</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">run_episode</span><span class="p">(</span><span class="n">n_steps</span> <span class="o">=</span> <span class="mi">50</span><span class="p">,</span><span class="n">save</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span><span class="n">replay</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span><span class="n">save_format</span><span class="o">=</span><span class="s2">&quot;gif&quot;</span><span class="p">,)</span>
+</code></pre></div>
 <h2 id="features">Features<a class="headerlink" href="#features" title="Permanent link">&para;</a></h2>
 <h3 id="current-features">Current features<a class="headerlink" href="#current-features" title="Permanent link">&para;</a></h3>
 <ul>
@@ -678,6 +855,8 @@ poetry run python
 <ul>
 <li><a href="mailto:theo.alves.da.costa@gmail.com">Théo Alves Da Costa</a></li>
 </ul>
+<h2 id="javascript-version">Javascript version<a class="headerlink" href="#javascript-version" title="Permanent link">&para;</a></h2>
+<p>A javascript version is being developed at https://github.com/TheoLvs/westworldjs</p>
                 
               
               

@@ -13,14 +13,14 @@
         <meta name="author" content="Théo Alves Da Costa">
       
       
-        <link rel="canonical" href="https://theolvs.github.io/westworld/tutorials/simple_visionrange/">
+        <link rel="canonical" href="https://theolvs.github.io/westworld/tutorials/movements/">
       
       <link rel="icon" href="../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.2.2, mkdocs-material-7.2.6">
     
     
       
-        <title>Simple Vision Range simulation - Westworld documentation</title>
+        <title>Movements - Westworld documentation</title>
       
     
     
@@ -69,7 +69,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#simple-vision-range-simulation" class="md-skip">
+        <a href="#movements" class="md-skip">
           Skip to content
         </a>
       
@@ -99,7 +99,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Simple Vision Range simulation
+              Movements
             
           </span>
         </div>
@@ -187,6 +187,8 @@
         
   
   
+    
+  
 
 
   
@@ -198,7 +200,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../quickstart/" class="md-tabs__link">
+      <a href="../quickstart/" class="md-tabs__link md-tabs__link--active">
         Tutorials
       </a>
     </li>
@@ -327,12 +329,14 @@
 
   
   
+    
+  
   
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" checked>
       
       <label class="md-nav__link" for="__nav_2">
         Tutorials
@@ -348,14 +352,16 @@
             
   
   
+    
+  
   
     
       
     
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_1" type="checkbox" id="__nav_2_1" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_1" type="checkbox" id="__nav_2_1" checked>
       
       <label class="md-nav__link" for="__nav_2_1">
         Basic
@@ -383,11 +389,65 @@
             
   
   
+    
   
-    <li class="md-nav__item">
-      <a href="../movements/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Movements
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         Movements
       </a>
+      
+        
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#random-walk" class="md-nav__link">
+    Random Walk
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#wandering" class="md-nav__link">
+    Wandering
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pathfinding" class="md-nav__link">
+    Pathfinding
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -537,8 +597,22 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#simple-range" class="md-nav__link">
-    Simple Range
+  <a href="#random-walk" class="md-nav__link">
+    Random Walk
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#wandering" class="md-nav__link">
+    Wandering
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pathfinding" class="md-nav__link">
+    Pathfinding
   </a>
   
 </li>
@@ -556,14 +630,58 @@
               
                 
                 
-                <h1 id="simple-vision-range-simulation">Simple Vision Range simulation<a class="headerlink" href="#simple-vision-range-simulation" title="Permanent link">&para;</a></h1>
-<div class="admonition abstract">
-<p class="admonition-title">Abstract</p>
-<p>For many simulations we need to find objects in range</p>
-</div>
-<h2 id="simple-range">Simple Range<a class="headerlink" href="#simple-range" title="Permanent link">&para;</a></h2>
-<p>In this simulation agents in range turn red. </p>
-<p><img alt="" src="../img/SimpleEpidemic_1586783361.gif" /></p>
+                <h1 id="movements">Movements<a class="headerlink" href="#movements" title="Permanent link">&para;</a></h1>
+<p>For each step in the simulation, the environment will calculate what happens to every non-stationary objects binded to it. 
+In particular, the agents who will probably move between t and t+1. </p>
+<p>If you can subclass the <code>step()</code> function for any custom movements. There are already many pre-coded functions to make your agent move. </p>
+<p>We will need the basic westworld imports for this tutorial
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">westworld.environment</span> <span class="kn">import</span> <span class="n">GridEnvironment</span>
+<span class="kn">from</span> <span class="nn">westworld.agents</span> <span class="kn">import</span> <span class="n">BaseAgent</span>
+<span class="kn">from</span> <span class="nn">westworld.simulation</span> <span class="kn">import</span> <span class="n">Simulation</span>
+<span class="kn">from</span> <span class="nn">westworld.colors</span> <span class="kn">import</span> <span class="n">BLUE</span><span class="p">,</span><span class="n">GREEN</span><span class="p">,</span><span class="n">RED</span>
+</code></pre></div></p>
+<h2 id="random-walk">Random Walk<a class="headerlink" href="#random-walk" title="Permanent link">&para;</a></h2>
+<p>The most simple move there is: taking a random step. </p>
+<p>As you can see, you simply subclass the <code>BaseAgent</code>, setup a random walk in one line of code and add it to the environment  </p>
+<p><div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">Agent</span><span class="p">(</span><span class="n">BaseAgent</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">random_walk</span><span class="p">()</span>
+
+<span class="c1"># Define all agents     </span>
+<span class="n">agent1</span> <span class="o">=</span> <span class="n">Agent</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="n">curiosity</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span><span class="n">color</span> <span class="o">=</span> <span class="n">GREEN</span><span class="p">)</span>
+<span class="n">agent2</span> <span class="o">=</span> <span class="n">Agent</span><span class="p">(</span><span class="mi">17</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="n">curiosity</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span><span class="n">color</span> <span class="o">=</span> <span class="n">BLUE</span><span class="p">)</span>
+<span class="n">agent3</span> <span class="o">=</span> <span class="n">Agent</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="n">curiosity</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span><span class="n">color</span> <span class="o">=</span> <span class="n">RED</span><span class="p">)</span>
+
+<span class="c1"># Define environment</span>
+<span class="n">env</span> <span class="o">=</span> <span class="n">GridEnvironment</span><span class="p">(</span><span class="n">width</span> <span class="o">=</span> <span class="mi">20</span><span class="p">,</span><span class="n">height</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span><span class="n">cell_size</span> <span class="o">=</span> <span class="mi">20</span><span class="p">,</span><span class="n">show_grid</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># Add agents to the environment</span>
+<span class="n">env</span><span class="o">.</span><span class="n">add_object</span><span class="p">([</span><span class="n">agent1</span><span class="p">,</span><span class="n">agent2</span><span class="p">,</span><span class="n">agent3</span><span class="p">])</span>
+<span class="n">env</span><span class="o">.</span><span class="n">render</span><span class="p">()</span>
+
+<span class="c1"># Make simulation</span>
+<span class="n">sim</span> <span class="o">=</span> <span class="n">Simulation</span><span class="p">(</span><span class="n">env</span><span class="p">,</span><span class="n">fps</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;RandomWalk&quot;</span><span class="p">)</span>
+<span class="n">_</span><span class="p">,</span><span class="n">_</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">run_episode</span><span class="p">(</span><span class="n">n_steps</span> <span class="o">=</span> <span class="mi">20</span><span class="p">,</span><span class="n">save</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span><span class="n">replay</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span><span class="n">save_format</span><span class="o">=</span><span class="s2">&quot;gif&quot;</span><span class="p">)</span>
+</code></pre></div>
+<img alt="" src="../img/RandomWalk_1631837258.gif" /></p>
+<h2 id="wandering">Wandering<a class="headerlink" href="#wandering" title="Permanent link">&para;</a></h2>
+<p>If you need an agent to explore the environment, you can use the <code>.wander()</code> function. 
+Basically the agent will walk straight in a direction, and change direction at some point using a <code>curiosity</code> factor - ie for <code>curiosity = 5</code> it will change direction every 5 steps (in the example below, compare the behavior of the 3 agents with a different curiosity). </p>
+<p>In a <code>GridEnvironment</code>, the direction angle is approximated by sampling horizontal and vertical movements on the grid to match the angle as best as possible.</p>
+<p><div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">Agent</span><span class="p">(</span><span class="n">BaseAgent</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wander</span><span class="p">()</span>
+</code></pre></div>
+<img alt="" src="../img/RandomWalk_1631836560.gif" /></p>
+<h2 id="pathfinding">Pathfinding<a class="headerlink" href="#pathfinding" title="Permanent link">&para;</a></h2>
+<p>Another useful behavior is moving towards a point. This is done using pathfinding algorithms. </p>
+<p>If there are some obstacles, you may require advanced pathfinding (tutorial to come) which is more expensive to compute. Without obstacles you can use naive pathfinding. </p>
+<p>Just use the <code>.move_towards()</code> function and your agents will move towards a given target</p>
+<p><div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">Agent</span><span class="p">(</span><span class="n">BaseAgent</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">move_towards</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">naive</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+</code></pre></div>
+<img alt="" src="../img/RandomWalk_1631837025.gif" /></p>
                 
               
               
@@ -579,6 +697,41 @@
       
         
 <footer class="md-footer">
+  
+    <nav class="md-footer__inner md-grid" aria-label="Footer">
+      
+        
+        <a href="../quickstart/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Quickstart" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              Quickstart
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="../objects/" class="md-footer__link md-footer__link--next" aria-label="Next: Objects" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              Objects
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
   
   <div class="md-footer-meta md-typeset">
     <div class="md-footer-meta__inner md-grid">
