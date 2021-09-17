@@ -4,7 +4,7 @@
 ## Description
 **Westworld** is a multi-agent simulation library, its goal to simulate and optimize systems and environments with multiple agents interacting. Its inspiration is drawn from Unity software and [Unity ML Agents](https://github.com/Unity-Technologies/ml-agents), adapted in Python. 
 
-The goal is to be able to simulate environments in logistics, retails, epidemiology, providing pre-coded spatial environments and communication between agents. Optimization can be included using heuristics as well as Reinforcement Learning.
+The goal is to be able to simulate environments in logistics, retail, epidemiology, providing pre-coded spatial environments and communication between agents. Optimization can be included using heuristics as well as Reinforcement Learning.
 
 !!! warning "Experimental"
     This library is extremely experimental, under active development and alpha-release
@@ -58,4 +58,7 @@ poetry run python
 
 ## Contributors
 - [Théo Alves Da Costa](mailto:theo.alves.da.costa@gmail.com)
+
+## Javascript version
+A javascript version is being developed at https://github.com/TheoLvs/westworldjs
 

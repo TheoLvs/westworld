@@ -44,7 +44,12 @@ nav:
     - Home: index.md
     - References: references.md
   - Tutorials:
-    - Simple pathfinding: tutorials/simple_pathfinding.md
-    - Simple vision range: tutorials/simple_visionrange.md
+    - Basic:
+      - Quickstart: tutorials/quickstart.md
+      - Movements: tutorials/movements.md
+      - Objects: tutorials/objects.md
+    - Extra features: 
+      - Maze generation: tutorials/maze.md
+      - Other: tutorials/other.md
   - API:
     - api/index.md
