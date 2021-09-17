@@ -43,6 +43,7 @@ nav:
   - Home: 
     - Home: index.md
     - References: references.md
+    - Changelog: changelog.md
   - Tutorials:
     - Basic:
       - Quickstart: tutorials/quickstart.md

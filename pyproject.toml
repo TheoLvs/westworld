@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "westworld"
-version = "0.1.0"
+version = "0.1.1"
 description = "Multi-agent simulation library in Python"
 authors = ["Theo Alves Da Costa <theo.alves.da.costa@gmail.com>"]
 license = "MIT"
