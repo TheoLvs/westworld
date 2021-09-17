@@ -18,7 +18,7 @@ ffmpeg-python = "^0.2.0"
 imageio = "^2.9.0"
 
 [tool.poetry.dev-dependencies]
-pywin32 = { version = "225", markers = "sys_platform == 'win32'" }
+pywin32 = { version = "301", markers = "sys_platform == 'win32'" }
 jupyter = "^1.0.0"
 mkdocs = "^1.2.1"
 mkdocs-material = "^7.1.10"
