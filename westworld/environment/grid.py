@@ -4,7 +4,11 @@ import pandas as pd
 import pygame
 import random
 from PIL import Image
-from win32api import GetSystemMetrics
+
+try:
+    from win32api import GetSystemMetrics
+except:
+    GetSystemMetrics = lambda x: x
 
 
 # Custom libraries
