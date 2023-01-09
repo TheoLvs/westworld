@@ -351,10 +351,10 @@ class BaseRectangle(BaseObject):
     #=================================================================================
 
 
-    def prerender(self):
+    def pre_render(self):
         pass
 
-    def postrender(self):
+    def post_render(self):
         pass
     
 

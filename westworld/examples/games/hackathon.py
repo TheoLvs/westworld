@@ -7,6 +7,7 @@ from ...colors import *
 
 import pygame
 import numpy as np
+import matplotlib.pyplot as plt
 
 class BasePlayer(BaseAgent):
     def __init__(self,x,y,player1 = True,reproductor = False):
@@ -21,7 +22,7 @@ class BasePlayer(BaseAgent):
     def __repr__(self):
         return f"{'Red' if self.player1 else 'Blue'}Player({self.x},{self.y},gold={self.gold})"
         
-    def postrender(self):
+    def post_render(self):
         self.render_text(self.gold,size = 12,color=(255,255,255))
         
     @property
@@ -58,6 +59,10 @@ class BasePlayer(BaseAgent):
                 same_team.append(player)
             else:
                 other_team.append(player)
+
+        # Safe check to avoid having players from the same team who fight
+        if len(same_team) == 0 or len(other_team) == 0:
+            return None
                 
         same_team_strength = np.sum([x.gold for x in same_team])
         other_team_strength = np.sum([x.gold for x in other_team])
@@ -68,12 +73,15 @@ class BasePlayer(BaseAgent):
             
             for player in other_team:
                 player.kill()
+
+            same_team[0].gold += other_team_strength
                 
         else:
             
             for player in same_team:
                 player.kill()
         
+            other_team[0].gold += same_team_strength
         
         
     def _compute_proba_win(self,a,b):
@@ -102,6 +110,12 @@ class Obstacle(BaseObstacle):
         super().__init__(*args,**kwargs,color = (230, 230, 250))
 
 
+
+def make_obstacle(x,y,width,height):
+    return Obstacle(x,y,width,height)
+
+def make_reproduction_trigger(x,y):
+    return ReproductionTrigger(x,y)
 
         
 class Gold(BaseCollectible):
@@ -155,44 +169,103 @@ class ReproductionTrigger(BaseTrigger):
 
 
 
+class MapsGenerator:
+    def __init__(self,width,height):
 
+        self.width = width
+        self.height = height
 
-# Setup spawners
-gold_spawner = lambda x,y : Gold(x,y)
+    def make_map0(self):
+        return {}
+
+    def make_map1(self):
+
+        triggers = [
+            make_reproduction_trigger(1,1),
+            make_reproduction_trigger(self.width-2,1),
+            make_reproduction_trigger(1,self.height-2),
+            make_reproduction_trigger(self.width-2,self.height-2),
+        ]
+
+        obstacles = [
+            make_obstacle(0,0,self.width,1), # Top contour
+            make_obstacle(0,0,1,self.height), # Left contour
+            make_obstacle(self.width-1,0,1,self.height), # Right contour 
+            make_obstacle(0,self.height-1,self.width,1), # Bottom contour
+        ] 
+
+        return {
+            "triggers":triggers,
+            "obstacles":obstacles,
+        }
 
 
 class GameEnvironment(GridEnvironment):
 
     def __init__(self,width,height,
         player1_spawner,player2_spawner,n_players = 5,
-        obstacles = None,triggers = None,
+        level = {},
         gold_start = 200,gold_step_frequency = 1,gold_step_quantity = 1,
         cell_size = 15,
     ):
 
-        super().__init__(width,height,cell_size,show_grid = True,background_color=(22, 41, 60),grid_color=(34, 46, 75),toroidal=True)
-
         # Store spawners
         self.player1_spawner = player1_spawner
         self.player2_spawner = player2_spawner
+        self.gold_spawner = lambda x,y : Gold(x,y)
+        self.n_players = n_players
+
+        # Store obstacles and triggers
+        self.obstacles = level.get("obstacles")
+        self.triggers = level.get("triggers")
 
         # Store gold attributes
         self.gold_start = gold_start
         self.gold_step_frequency = gold_step_frequency
         self.gold_step_quantity = gold_step_quantity
 
+        # Setup score zone
+        margin = (0,50)
+
+        # Init base environment class after initialization to use class attributes
+        super().__init__(width,height,cell_size,show_grid = True,background_color=(22, 41, 60),grid_color=(34, 46, 75),toroidal=True,margin = margin)
 
 
-    # def reset(self):
+    def post_render(self):
+        self.render_score()
+
+
+    def render_score(self):
+
+        score = self.get_score()
+        blue_score = score["Blue"]
+        red_score = score["Red"]
+
+        self.render_text("Age of Emp-AI-re",position = (10,self.height*self.cell_size + 15),color = WHITE,size = 20,font = "Calibri")
+        self.render_text(f"Player 1 (Red): {red_score}",position = (200,self.height*self.cell_size + 15),color = RED,size = 20,font = "Calibri")
+        self.render_text(f"Player 2 (Blue): {blue_score}",position = (400,self.height*self.cell_size + 15),color = (100,100,255),size = 20,font = "Calibri")
+        self.render_text(f"©Ekimetrics",position = (600,self.height*self.cell_size + 10),color = WHITE,size = 14,font = "Calibri")
+        self.render_text(f"Powered by Westworld",position = (600,self.height*self.cell_size + 25),color = WHITE,size = 14,font = "Calibri")
+
+
+    def get_score(self):
+
+        blue_score = np.sum([x.gold for x in self.find(player1 = False)])
+        red_score = np.sum([x.gold for x in self.find(player1 = True)])
+
+        return {"Blue":blue_score,"Red":red_score}
+
+
+    def setup(self):
 
         # Add obstacles and triggers
-        self.add_object(triggers)
-        self.add_object(obstacles)
+        self.add_object(self.triggers)
+        self.add_object(self.obstacles)
 
         # Add players and collectibles
-        self.spawn(player1_spawner,n_players)
-        self.spawn(player2_spawner,n_players)
-        self.spawn(gold_spawner,self.gold_start)
+        self.spawn(self.player1_spawner,self.n_players)
+        self.spawn(self.player2_spawner,self.n_players)
+        self.spawn(self.gold_spawner,self.gold_start)
 
     
     def post_step(self):
@@ -201,4 +274,41 @@ class GameEnvironment(GridEnvironment):
         self.log({"gold_left":len(gold_left)})
         
         if self.clock > 0 and self.clock % self.gold_step_frequency == 0:
-            self.spawn(gold_spawner,self.gold_step_quantity)
+            self.spawn(self.gold_spawner,self.gold_step_quantity)
+
+
+
+class NaivePlayer(BasePlayer):
+    
+    def action(self):
+
+        # Find closest food
+        targets = self.find_closest(name = "Gold",k = 1)
+
+        # If there is still food, move towards the food
+        if len(targets) > 0:
+
+            target = targets[0]
+
+            # Use naive pathfinding for faster computation as there is no obstacle
+            self.move_towards(obj = target,naive = True)
+
+        # Otherwise just wandering
+        # Changing direction every n steps where n = curiosity
+        else:
+            self.wander()
+
+
+
+class RandomPlayer(BasePlayer):
+    def action(self):
+        self.random_walk()
+
+
+def show_results(episode_data):
+
+    result = episode_data.groupby(["step","player"])["gold"].sum().unstack("player").rename(columns = {False:"Player 2 (Blue)",True:"Player 1 (Red)"})
+    result["Player 1 (Red)"].plot(figsize = (15,4),c = "red")
+    result["Player 2 (Blue)"].plot(c = "blue")
+    plt.legend()
+    plt.show()

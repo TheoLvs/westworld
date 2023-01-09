@@ -43,9 +43,7 @@ class Simulation:
         reward,done,episode_data = self.env.step()
 
         # Render all objects in the environment
-        self.env.prerender()
         self.env.render()
-        self.env.postrender()
 
         return reward,done,episode_data
 
@@ -157,8 +155,13 @@ class Simulation:
         display(slider)
 
 
-    def run_episode(self,n_steps = 100,save = None,replay = False,fps_replay = 5,save_format = "video",render = True):
+    def run_episode(self,n_steps = 100,save = None,replay = False,fps_replay = 5,save_format = "video",render = True,reset = True):
 
+
+        # Reset environment
+        if reset:
+            self.env.reset()
+        self._reset_frame_cache()
 
         # Simulation variables
         simulation_on = True

@@ -17,20 +17,21 @@ from ..algorithms.neighbors import NeighborsFinder
 
 class GridEnvironment:
     def __init__(self,width = None,height = None,cell_size = 10,
-        objects = None,show_grid = False,grid_color = (50,50,50),background_color = (0,0,0),
+        show_grid = False,grid_color = (50,50,50),background_color = (0,0,0),
         callbacks_step = None,max_spawn_trials = 1000,
+        margin = (0,0),
         toroidal = True,
         ):
 
-        # Init pygame
-        pygame.init()
-        self.screen = pygame.display.set_mode((1,1),0,0)
-
-        # Store parameters
+        # Default attributes
         self._clock = 0
-        self._cell_size = cell_size
+        self.screen = pygame.display.set_mode((1,1),0,0)
         self._done = False
+
+        # Parameters attribute 
+        self._cell_size = cell_size
         self.show_grid = show_grid
+        self.margin = margin
         self.grid_color = grid_color
         self.max_spawn_trials = max_spawn_trials
         self.width = width if width is not None else ((GetSystemMetrics(0) - 100) // cell_size)
@@ -39,6 +40,19 @@ class GridEnvironment:
         self.callbacks_step = [] if callbacks_step is None else callbacks_step
         self.toroidal = toroidal
 
+        # Reset environment for initialization
+        self.reset()
+
+
+    #=================================================================================
+    # SETUP AND INITIALIZATION
+    #=================================================================================
+
+
+    def _init_environment(self):
+
+        # Init pygame
+
         # Groups initialization
         self.group_blocking = pygame.sprite.Group()
         self.group_layers = pygame.sprite.Group()
@@ -46,10 +60,9 @@ class GridEnvironment:
 
         # Objects initialization
         self._objects = {}
-        self.add_object(objects)
 
         # Grid Environment parameters
-        self.setup_screen()
+        self._init_screen()
 
         # Init objects data
         self.set_data()
@@ -57,7 +70,57 @@ class GridEnvironment:
 
         # Prepare logs
         self._logs = []
+
+
+
+
+
+    def _init_screen(self):
+        """Setup the first PyGame Screen
+        """
+
+        if self.has_layers():
+            self._init_screen_from_layer()
         
+
+        # Init pygame window
+        pygame.init()
+        pygame.display.set_caption("Westworld environment")
+
+        # Create window
+        self.screen = pygame.display.set_mode((
+            self.width * self.cell_size + self.margin[0],
+            self.height * self.cell_size + self.margin[1],
+            ),pygame.RESIZABLE)
+
+        # Fill with black
+        self._reset_screen()
+
+
+    def _reset_screen(self):
+        """Reset PyGame screen by filling with BLACK color
+        """
+        self.screen.fill(self.background_color)
+
+
+    def reset(self):
+        """Reset function, should return the environment state like in OpenAIGym
+        """
+
+        self._clock = 0
+        self._init_environment()
+        self.setup()
+        self.render()
+        
+
+
+    def setup(self):
+        """Function to override to have custom environment setup
+        """
+        pass
+        
+
+
 
 
     @property
@@ -486,28 +549,6 @@ class GridEnvironment:
 
 
 
-    def setup_screen(self):
-        """Setup the first PyGame Screen
-        """
-
-        if self.has_layers():
-            self._init_screen_from_layer()
-        
-
-        # Init pygame window
-        pygame.init()
-        pygame.display.set_caption("Westworld environment")
-
-        # Create window
-        self.screen = pygame.display.set_mode((
-            self.width * self.cell_size,
-            self.height * self.cell_size
-            ),pygame.RESIZABLE)
-
-        # Fill with black
-        self.reset_screen()
-
-
     def render_text(self,text,font = "Arial",size = 30,position = (5,5),screen = None,color = (0,0,0)):
 
         font = pygame.font.SysFont(font, size)
@@ -519,10 +560,6 @@ class GridEnvironment:
 
 
 
-    def reset_screen(self):
-        """Reset PyGame screen by filling with BLACK color
-        """
-        self.screen.fill(self.background_color)
 
 
     def render_grid(self,color = (50,50,50)):
@@ -533,22 +570,25 @@ class GridEnvironment:
                 pygame.draw.rect(self.screen, color, rect, 1)
 
 
-    def prerender(self):
+    def pre_render(self):
         pass
 
 
-    def postrender(self):
+    def post_render(self):
         pass
 
 
-    def render(self,screen = None):
+    def render(self,screen = None,show = False):
         """Render the environment
         TODO: could be without PyGame
         """
 
+        self.pre_render()
+        
+
         if screen is None:
             # Reset current screen to black
-            self.reset_screen()
+            self._reset_screen()
             screen = self.screen
 
         # Show grid if necessary
@@ -557,12 +597,18 @@ class GridEnvironment:
 
         # Render each object
         for el in self.objects:
-            el.prerender()
+            el.pre_render()
             el.render(screen = screen)
-            el.postrender()
+            el.post_render()
+
+
+        self.post_render()
 
         # Update the PyGame renderer
         pygame.display.update()
+
+        if show:
+            return self.get_img()
 
 
 
